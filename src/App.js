@@ -1,4 +1,3 @@
-
 // npm start
 
 import React, {useState, useEffect} from 'react';
@@ -89,7 +88,7 @@ function App() {
 	*/
 	function email_add_item(flist, item) {
 		let idate = new Date(item.received);
-		item.pdate = idate; // <-- vert here
+		item.pdate = idate;
 
 		if (flist.length < 1) {
 			flist.push(item);
@@ -270,7 +269,7 @@ function App() {
 			console.log(" ");
 			console.log(" ");
 		})
-		.catch((error) => { // here..
+		.catch((error) => {
 			err("POST request error: "+error);
 		});
 	}
