@@ -3,9 +3,8 @@
 import React, {useState, useEffect} from 'react';
 import DOMPurify from 'dompurify';
 import timer from './timer.js';
-import R_commands from './R_commands';
-import R_List_Display from './R_List_Display';
-//import ReactDOM from 'react-dom';
+import R_COMMANDS from './r_commands';
+import R_List_Display from './r_list_display';
 import './App.css';
 
 
@@ -28,24 +27,26 @@ function App() {
 
 	var m_display_string = "";
 
-	//const [m_display_string, set_display_string] = useState('');
-	//const [m_email_amount, set_email_amount] = useState(10);
-
-	//const [m_slider_value, setSliderValue] = useState(50); // Initial value of the slider
-
-  // Function to handle slider value changes
-	/*const handleSliderChange = (event) => {
-		setSliderValue(event.target.value);
-		m_email_amount = parseInt(event.target.value);
-		set_display_string('');
-		// display_update();
-		update_email_list();
-	};*/
-
 	const m_timer = new timer();
 
 	function err(err_str) {
 		throw new Error("Error: "+err_str);
+	}
+
+	function click_select_email(em_body) {
+		if (m_tab === null) {
+			m_tab = window.open('', '_blank');
+			if (m_tab === null) {
+				console.log('New tab could not be opened, possibly disable popup blocker');
+				return;
+			}
+			m_tab.addEventListener('beforeunload', () => {  
+				m_tab = null;
+			});
+			m_tab.document.title = 'Message';
+			//m_tab.document.body.style.backgroundColor = 'yellow';
+		}
+		m_tab.document.body.innerHTML = em_body;
 	}
 
 	// Called during refresh of page and inital loading
@@ -105,49 +106,29 @@ function App() {
 	}
 
 	function update_next() {
-		let i, item;
-		let flist = [ ], tmp = [ ];
-		let spacing_result = "";
+		let i;
+		let flist = [ ];
 
 		console.log("update next..");
 
 		for (i=0;i<m_parsed_sql.length;i++) {
-			item = m_parsed_sql[i];
-			email_add_item(flist, item);
-		}
-		for (i=0;i<flist.length;i++) {
-
-//			const item = flist[i];
-//			spacing_result = string_spacing(190, 8, item.em_from, 45, item.em_to, 45, item.em_subject, 55, item.received, 35);
-			//tmp.push(<button key={i} style={{fontSize: '12px', height: '25px', verticalAlign: 'bottom', padding: 0, marginBottom: '10px', lineHeight: '1px'}} 
-//				onClick={() => click_select_email(item.em_body)}>{spacing_result}</button>);
+			email_add_item(flist, m_parsed_sql[i]);
 		}
 		m_first_item = flist[0].received;
 		if (flist.length-1 > -1)
 			m_last_item = flist[flist.length-1].received;
 		else
 			m_last_item = m_first_item;
-
 		set_contacts(flist);
 	}
 
 	function update_default() {
-		let tmp = [ ];
-		let spacing_result = "";
-
 		m_first_item = m_parsed_sql[0].received;
 		if (m_parsed_sql.length-1 > -1)
 			m_last_item = m_parsed_sql[m_parsed_sql.length-1].received;
 		else
 			m_last_item = m_first_item;
-/*
-		for (let i=0;i<m_parsed_sql.length;i++) {
-			const item = m_parsed_sql[i];
-			spacing_result = string_spacing(190, 8, item.em_from, 45, item.em_to, 45, item.em_subject, 55, item.received, 35);
-			tmp.push(<button key={i} style={{fontSize: '12px', height: '25px', verticalAlign: 'bottom', padding: 0, marginBottom: '10px', lineHeight: '1px'}} 
-				onClick={() => click_select_email(item.em_body)}>{spacing_result}</button>);
-		}
-		set_contacts(tmp);*/
+		set_contacts(m_parsed_sql);
 	}
 
 	function update_email_list() {
@@ -174,22 +155,7 @@ function App() {
 		handle_post_request(value);
 	}
 
-	function click_select_email(em_body) {
-		if (m_tab === null) {
-			m_tab = window.open('', '_blank');
-			if (m_tab === null) {
-				console.log('New tab could not be opened, possibly disable popup blocker');
-				return;
-			}
-			m_tab.addEventListener('beforeunload', () => {  
-				m_tab = null;
-			});
-			m_tab.document.title = 'Message';
-			//m_tab.document.body.style.backgroundColor = 'yellow';
-		}
-		m_tab.document.body.innerHTML = em_body;
-	}
-	
+
 	
 	function HtmlRenderer({ htmlContent }) {
 		const sanitizedHtml = DOMPurify.sanitize(htmlContent);
@@ -245,24 +211,6 @@ function App() {
 		});
 	}
 	
-
-	/*
-        <button onClick={handle_post_request("prev")}>Perform POST Request</button>
-			<input 
-				type='range'
-				min='1'
-				max='50'
-				value={m_slider_value} // Bind the value to the 
-				onChange={handleSliderChange} // Handle changes to the slider
-				className='slider'
-				id='myRange'
-			/>
-			<p>
-				Value: {m_slider_value}
-			</p>
-
-	*/
-
 	return (
 		<main>
 			{loading === true ? (
@@ -271,21 +219,17 @@ function App() {
 				</div>
 			) : (
 
-		<div className='slidecontainer'>
-			<R_commands onChildClick={click_update_email_list}/>
-				<b>
-					{/*string_spacing(...arg)*/}
-				</b>
+		<div className="R_COMMANDS">
+			<R_COMMANDS onChildClick={click_update_email_list}/>
 				<div style={{
 					width:		'1500px',
 					height:		'550px',
 					overflowY:	'scroll',
 					padding:	'0px 0px'
 				}}>
-					<div className="R_list_display">
-						<R_List_Display items={contacts} title="" />
+					<div className="R_List_Display">
+						<R_List_Display click_select_email={click_select_email} items={contacts} title="" />
 					</div>
-					{/*contacts*/}
 				</div>
 				<br/>
 				<br/>

@@ -8,19 +8,21 @@ const arg = [
 	'Date Received', 35
 ];
 
-const R_List_Display = (props) => {
+const r_list_display = (props) => {
 	const items = props.items;
 
 	return (
-		<div className="R_List_Display">
-		<b>
-			{string_spacing(...arg)}
-		</b>
-		{items.map((item) => (
-			<div className="email_items">
-				<h1>{item.em_from}</h1>
-			</div>
-		))}
+		<div className="r_list_display">
+		<b> {string_spacing(...arg)} </b>
+		{items.map((item) => {
+			const spacing_result = string_spacing(190, 8, item.em_from, 45, item.em_to, 45, item.em_subject, 55, item.received, 35); 
+			return (
+				<div className="email_items">
+					<button key={item.id} style={{fontSize: '12px', height: '25px', verticalAlign: 'bottom', padding: 0, marginBottom: '10px', lineHeight: '1px'}}
+					onClick={() => props.click_select_email(item.em_body)}>{spacing_result}</button>
+				</div>
+			);
+		})}
 		</div>
 	);
 }
@@ -114,4 +116,4 @@ function slim_string(str, len, pad) {
 	return tmp;
 }
 
-export default R_List_Display;
+export default r_list_display;
