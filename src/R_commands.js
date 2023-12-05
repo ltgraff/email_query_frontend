@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Rcomponent({ onChildClick }) {
+function R_commands({ onChildClick }) {
 
   const handleButtonClick1 = () => {
     onChildClick("prev");
@@ -24,4 +24,4 @@ function Rcomponent({ onChildClick }) {
   );
 }
 
-export default Rcomponent;
+export default R_commands;
