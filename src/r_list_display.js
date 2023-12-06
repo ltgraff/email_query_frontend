@@ -42,22 +42,6 @@ const r_list_display = (props) => {
 // 4:	str
 // 5:	str_len
 function string_spacing() {
-	/*const [totalSize, padding, ...strings] = arguments;
-	const combinedString = strings.reduce((result, str, index) => {
-		result += str + ' '.repeat(padding);
-		return result;
-	}, '');
-	const paddingSize = totalSize - combinedString.length;
-
-	if (paddingSize > 0) {
-		const paddedString = combinedString + ' '.repeat(paddingSize);
-		return <pre>{paddedString}</pre>;
-	}
-
-	if (2 > 1)
-		return <pre>{combinedString}</pre>;
-*/
-
 	let disp = '';
 	let i, q;
 
@@ -87,23 +71,7 @@ function slim_string(str, len, pad) {
 	while (str.length < len + pad) 
 		str += ' ';
 
-	if (2 > 1)
-		return str;
-
-	let tmp;
-
-	len-=pad;
-	if (typeof(str) !== 'string')
-		tmp = ''+str;
-	else
-		tmp = str;
-	if (tmp.length > len)
-		tmp = tmp.substring(0, len);
-	if (tmp.length < len+pad) {
-		for (let i=tmp.length;i<len+pad;i++)
-			tmp+=' ';
-	}
-	return tmp;
+	return str;
 }
 
 export default r_list_display;
