@@ -109,11 +109,8 @@ function App() {
 		let i;
 		let flist = [ ];
 
-		console.log("update next..");
-
-		for (i=0;i<m_parsed_sql.length;i++) {
+		for (i=0;i<m_parsed_sql.length;i++) 
 			email_add_item(flist, m_parsed_sql[i]);
-		}
 		m_first_item = flist[0].received;
 		if (flist.length-1 > -1)
 			m_last_item = flist[flist.length-1].received;
@@ -134,11 +131,8 @@ function App() {
 	function update_email_list() {
 		m_id_list = [ ];
 
-		if (m_parsed_sql === null) {
-			console.log('m_parsed_sql is null');
-			return;
-		}
-
+		if (m_parsed_sql === null)
+			err("m_parsed_sql is null");
 		if (m_command === "next")
 			update_next();
 		else
@@ -154,8 +148,6 @@ function App() {
 		m_timer.start();
 		handle_post_request(value);
 	}
-
-
 	
 	function HtmlRenderer({ htmlContent }) {
 		const sanitizedHtml = DOMPurify.sanitize(htmlContent);
