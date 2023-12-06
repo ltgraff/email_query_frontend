@@ -7,19 +7,30 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Individual buttons in the r_list_display */
+
+/* Space between buttons, etc */
 .email_items {
+	font-size: 12px;
+	height: 29px;
+	vertical-align: 'center';
+	color: #000000;
+	background-color: #AAAAAA;
+	margin-bottom: 2px;
+	line-height: 0px;
+
 	text-decoration: none;
 	padding: 0px;
-	color: #f1356d;
-	border: 0px solid #fafafa;
+	/*border: 0px solid #fafafa;*/
 	border-radius: 12px;
 }
 
+/* Top heading */
 .r_list_display {
 	margin-left: 3px;
 	text-decoration: none;
 	padding: 0px;
-	color: #f1356d;
+	color: #000000;
 	border: 0px solid #fafafa;
 }
 

@@ -23,10 +23,8 @@ const r_list_display = (props) => {
 		{items.map((item) => {
 			const spacing_result = string_spacing(190, 8, item.em_from, 45, item.em_to, 45, item.em_subject, 55, item.received, 30); 
 			return (
-				<div className="email_items">
-					<button key={item.id} style={{fontSize: '12px', height: '25px', verticalAlign: 'bottom', padding: 0, color: '#000000',backgroundColor: '#AAAAAA', marginBottom: '3px', lineHeight: '0px'}}
+					<button className="email_items" key={item.id}
 					onClick={() => props.click_select_email(item.em_body)}>{spacing_result}</button>
-				</div>
 			);
 		})}
 		{m_timer.stop()}
