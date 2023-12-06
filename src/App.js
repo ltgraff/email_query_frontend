@@ -4,7 +4,7 @@ import React, {useState, useEffect} from 'react';
 import DOMPurify from 'dompurify';
 import timer from './timer.js';
 import R_COMMANDS from './r_commands';
-import R_List_Display from './r_list_display';
+import R_LIST_DISPLAY from './r_list_display';
 import './App.css';
 
 
@@ -222,13 +222,13 @@ function App() {
 		<div className="R_COMMANDS">
 			<R_COMMANDS onChildClick={click_update_email_list}/>
 				<div style={{
-					width:		'1500px',
+					width:		'1520px',
 					height:		'550px',
 					overflowY:	'scroll',
 					padding:	'0px 0px'
 				}}>
 					<div className="R_List_Display">
-						<R_List_Display click_select_email={click_select_email} items={contacts} title="" />
+						<R_LIST_DISPLAY click_select_email={click_select_email} items={contacts} title="" />
 					</div>
 				</div>
 				<br/>

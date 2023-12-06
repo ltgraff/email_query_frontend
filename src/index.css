@@ -7,6 +7,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.email_items {
+	text-decoration: none;
+	padding: 0px;
+	color: #f1356d;
+	border: 0px solid #fafafa;
+	border-radius: 12px;
+}
+
+.r_list_display {
+	margin-left: 3px;
+	text-decoration: none;
+	padding: 0px;
+	color: #f1356d;
+	border: 0px solid #fafafa;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

@@ -1,11 +1,14 @@
 import React from 'react';
+import TIMER from './timer.js';
+
+var m_timer = new TIMER();
 
 const arg = [
 	190, 8,
 	'From', 45,
 	'To', 45,
 	'Subject', 55,
-	'Date Received', 35
+	'Date Received', 30
 ];
 
 const r_list_display = (props) => {
@@ -13,37 +16,24 @@ const r_list_display = (props) => {
 
 	return (
 		<div className="r_list_display">
-		<b> {string_spacing(...arg)} </b>
+		<b> 
+			{m_timer.start()}
+			{string_spacing(...arg)}
+		 </b>
 		{items.map((item) => {
-			const spacing_result = string_spacing(190, 8, item.em_from, 45, item.em_to, 45, item.em_subject, 55, item.received, 35); 
+			const spacing_result = string_spacing(190, 8, item.em_from, 45, item.em_to, 45, item.em_subject, 55, item.received, 30); 
 			return (
 				<div className="email_items">
-					<button key={item.id} style={{fontSize: '12px', height: '25px', verticalAlign: 'bottom', padding: 0, marginBottom: '10px', lineHeight: '1px'}}
+					<button key={item.id} style={{fontSize: '12px', height: '25px', verticalAlign: 'bottom', padding: 0, color: '#000000',backgroundColor: '#AAAAAA', marginBottom: '3px', lineHeight: '0px'}}
 					onClick={() => props.click_select_email(item.em_body)}>{spacing_result}</button>
 				</div>
 			);
 		})}
+		{m_timer.stop()}
+		{console.log("timer: "+m_timer.get_elapsed_milli())}
 		</div>
 	);
 }
-
-/*
-//		for (i=0;i<flist.length;i++) {
-//			const item = flist[i];
-//			spacing_result = string_spacing(190, 8, item.em_from, 45, item.em_to, 45, item.em_subject, 55, item.received, 35);
-//			tmp.push(<button key={i} style={{fontSize: '12px', height: '25px', verticalAlign: 'bottom', padding: 0, marginBottom: '10px', lineHeight: '1px'}} 
-//				onClick={() => click_select_email(item.em_body)}>{spacing_result}</button>);
-		}
-//		m_first_item = flist[0].received;
-//		if (flist.length-1 > -1)
-//			m_last_item = flist[flist.length-1].received;
-//		else
-//			m_last_item = m_first_item;
-
-//		set_contacts(tmp);
-
-}
-*/
 
 // 0:	total str size
 // 1:	padding between strings
