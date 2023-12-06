@@ -8,21 +8,21 @@ body {
 }
 
 /* Individual buttons in the r_list_display */
-
-/* Space between buttons, etc */
-.email_items {
+.email_item {
 	font-size: 12px;
 	height: 29px;
 	vertical-align: 'center';
 	color: #000000;
+	border: 1px solid #AAAAAA;
+	/*
 	background-color: #AAAAAA;
+	*/
 	margin-bottom: 2px;
 	line-height: 0px;
 
 	text-decoration: none;
 	padding: 0px;
-	/*border: 0px solid #fafafa;*/
-	border-radius: 12px;
+	border-radius: 8px;
 }
 
 /* Top heading */
