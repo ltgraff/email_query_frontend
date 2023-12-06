@@ -16,7 +16,6 @@ function r_commands({ onChildClick }) {
 
   return (
     <div>
-	  { /* Cool comment */ }
       <button onClick={() => handleButtonClick1()}> Prev </button>
       <button onClick={() => handleButtonClick2()}> Refresh </button>
       <button onClick={() => handleButtonClick3()}> Next </button>

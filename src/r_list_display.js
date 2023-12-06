@@ -35,6 +35,7 @@ const r_list_display = (props) => {
 	);
 }
 
+// Ensure each argument takes up a certain amount of space, to ensure text lines up
 // 0:	total str size
 // 1:	padding between strings
 // 2:	str

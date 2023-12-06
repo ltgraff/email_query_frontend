@@ -211,7 +211,7 @@ function App() {
 				</div>
 			) : (
 
-		<div className="R_COMMANDS">
+		<div className="r_commands">
 			<R_COMMANDS onChildClick={click_update_email_list}/>
 				<div style={{
 					width:		'1520px',
@@ -219,7 +219,7 @@ function App() {
 					overflowY:	'scroll',
 					padding:	'0px 0px'
 				}}>
-					<div className="R_List_Display">
+					<div className="r_list_display">
 						<R_LIST_DISPLAY click_select_email={click_select_email} items={contacts} title="" />
 					</div>
 				</div>
