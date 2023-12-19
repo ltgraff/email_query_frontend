@@ -19,11 +19,10 @@ const r_list_display = (props) => {
 		{items.map((item) => {
 			const spacing_result = disp.spacing_display(item.em_from, item.em_to, item.em_subject, item.received);
 			return (
-					<button className="email_item" key={item.id}
-					onClick={() => props.click_select_email(item.em_body)}>{spacing_result}</button>
+					<button className="email_item" key={item.eid} onClick={() => props.click_select_email(item.em_body)}>{spacing_result}</button>
 			);
 		})}
-		{m_timer.stop()}
+		{m_timer.restart()}
 		{console.log("timer: "+m_timer.get_elapsed_milli())}
 		</div>
 	);

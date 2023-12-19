@@ -9,8 +9,6 @@ import R_LIST_DISPLAY from './r_list_display';
 
 //import styled from 'styled-components';
 
-import {string_spacing} from './string_spacing.js';
-
 import './App.css';
 
 var m_tab = null;
@@ -20,14 +18,6 @@ var m_first_item = null;
 var m_last_item = null;
 var m_id_list = [ ];
 var m_command = "cur";
-
-var arg = [
-	190, 8,
-	'From', 45,
-	'To', 45,
-	'Subject', 55,
-	'Date Received', 30
-]
 
 /*
 const StyledInput = styled.input`
@@ -57,6 +47,12 @@ function App() {
 
 	function err(err_str) {
 		throw new Error("Error: "+err_str);
+	}
+
+	function reset_column_inputs() {
+		setFrom("");
+		setTo("");
+		setSubject("");
 	}
 
 	/*
@@ -141,9 +137,7 @@ function App() {
 		};
 
 		if (m_command === "cur") {
-			setFrom("");
-			setTo("");
-			setSubject("");
+			reset_column_inputs();
 		}
 
 		fetch('http://localhost:3001/api/send-data', {
@@ -234,15 +228,22 @@ function App() {
 	}
 
 	function click_update_email_list(value) {
-		if (value === "cur") {
+		if (value === "cur" || value === "reset") {
 			m_first_item = null;
 			m_last_item = null;
 			m_id_list = [ ];
+			if (value === "reset") {
+				reset_column_inputs();
+				return;
+			}
 		}
 		m_timer.start();
 		handle_post_request(value);
 	}
 	
+	/*
+	* Render the email html page in a safeish manner
+	*/
 	function HtmlRenderer({ htmlContent }) {
 		const sanitizedHtml = DOMPurify.sanitize(htmlContent);
 		return (
@@ -257,21 +258,22 @@ function App() {
 					<h1>Loading..</h1>
 				</div>
 			) : (
-
 		<div className="r_commands">
-			<input type="text" value={m_from} onChange={(e) => setFrom(e.target.value)}/>
-			<input type="text" value={m_to} onChange={(e) => setTo(e.target.value)}/>
-			<input type="text" value={m_subject} onChange={(e) => setSubject(e.target.value)}/>
 			<R_COMMANDS onChildClick={click_update_email_list}/>
+			<br />
+			<br />
+			<input className="input_columns" type="text" value={m_from} onChange={(e) => setFrom(e.target.value)}/>
+			<input className="input_columns" type="text" value={m_to} onChange={(e) => setTo(e.target.value)}/>
+			<input className="input_columns_last" type="text" value={m_subject} onChange={(e) => setSubject(e.target.value)}/>
 				<div style={{
 					width:		'1520px',
 					height:		'550px',
 					overflowY:	'scroll',
 					padding:	'0px 0px'
 				}}>
-					<div className="r_list_display">
-						<R_LIST_DISPLAY click_select_email={click_select_email} items={contacts} title="" />
-					</div>
+				<div className="r_list_display">
+					<R_LIST_DISPLAY click_select_email={click_select_email} items={contacts} title="" />
+				</div>
 				</div>
 				<br/>
 				<br/>
@@ -279,7 +281,7 @@ function App() {
 			</div>
 				)
 			}
-		{m_from} {m_to} {m_subject}
+		{"first: "+m_from} {m_to} {m_subject}
 		</main>
 	);
 }

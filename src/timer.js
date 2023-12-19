@@ -15,6 +15,11 @@ class timer {
 		this.m_running = false;
 	}
 
+	restart() {
+		this.m_stop = Date.now();
+		this.start();
+	}
+
 	get_elapsed(conv) {
 		let elapsed;
 
