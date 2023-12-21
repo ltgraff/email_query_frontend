@@ -7,8 +7,6 @@ import timer from './timer.js';
 import R_COMMANDS from './r_commands';
 import R_LIST_DISPLAY from './r_list_display';
 
-//import styled from 'styled-components';
-
 import './App.css';
 
 var m_tab = null;
@@ -19,17 +17,11 @@ var m_last_item = null;
 var m_id_list = [ ];
 var m_command = "cur";
 
-/*
-const StyledInput = styled.input`
-	display: block;
-	margin: 20px 0px;
-	border: 1px solid lightblue;
-`;
-*/
-
 function App() {
 	const [contacts, set_contacts] = useState(['hiya! this is the initial state']);
 	const [loading, set_loading] = useState(true);
+	const [m_date_start, setDateStart] = useState("");
+	const [m_date_end, setDateEnd] = useState("");
 	const [m_from, setFrom] = useState("");
 	const [m_to, setTo] = useState("");
 	const [m_subject, setSubject] = useState("");
@@ -43,8 +35,6 @@ function App() {
 
 	const m_timer = new timer();
 
-//	const inputProps = useInput();
-
 	function err(err_str) {
 		throw new Error("Error: "+err_str);
 	}
@@ -53,21 +43,9 @@ function App() {
 		setFrom("");
 		setTo("");
 		setSubject("");
+		setDateStart("");
+		setDateEnd("");
 	}
-
-	/*
-	function useInput(val) {
-		const [value, setValue] = useState(val);
-
-		function onChange(e) {
-			setValue(e.target.value);
-		}
-
-		return {
-			value, onChange
-		};
-	}
-	*/
 
 	function click_select_email(em_body) {
 		if (m_tab === null) {
@@ -80,16 +58,12 @@ function App() {
 				m_tab = null;
 			});
 			m_tab.document.title = 'Message';
-			//m_tab.document.body.style.backgroundColor = 'yellow';
 		}
 		m_tab.document.body.innerHTML = em_body;
 	}
 
 	// Called during refresh of page and inital loading
 	function display_update() {
-		// var		scoped to function body
-		// let		scoped to block
-
 		let dtmp = new timer();
 		let ftmp = new timer();
 
@@ -131,14 +105,22 @@ function App() {
 		m_command = cmd;
 		const postData = {
 			key1: m_command,
-			key2: m_first_item,
-			key3: m_last_item,
-			key4: m_id_list,
+			key2: m_to,
+			key3: m_from,
+			key4: m_subject,
+			key5: m_date_start,
+			key6: m_date_end,
+			key7: m_first_item,
+			key8: m_last_item,
+			key9: m_id_list,
 		};
 
 		if (m_command === "cur") {
 			reset_column_inputs();
 		}
+
+		console.log("to: *"+m_to+"* from: *"+m_from+"*")
+		console.log("first: *"+m_first_item+"* last: *"+m_last_item+"*")
 
 		fetch('http://localhost:3001/api/send-data', {
 			method: 'POST',
