@@ -36,7 +36,8 @@ function App() {
 	const m_timer = new timer();
 
 	function err(err_str) {
-		throw new Error("Error: "+err_str);
+		let d = new Date();
+		throw new Error(d.toString().slice(0, 24)+"   "+err_str);
 	}
 
 	function reset_column_inputs() {
@@ -82,7 +83,10 @@ function App() {
 		.then((data) => {
 			set_loading(false);
 			m_parsed_sql = JSON.parse(data);
-			update_email_list();
+			//if (!m_parsed_sql || !m_parsed_sql[0])
+			//	err("Data from the website gave an error");
+			if (! update_email_list())
+				console.log("display_update error!");
 
 			dtmp.stop();
 
@@ -115,9 +119,7 @@ function App() {
 			key9: m_id_list,
 		};
 
-		if (m_command === "cur") {
-			reset_column_inputs();
-		}
+		if (m_command === "cur")
 
 		console.log("to: *"+m_to+"* from: *"+m_from+"*")
 		console.log("first: *"+m_first_item+"* last: *"+m_last_item+"*")
@@ -134,13 +136,15 @@ function App() {
 			tmp2.start();
 			if (! response.ok)
 				err("Network response was not ok: "+response.text());
-			update_email_list();
+			if (! update_email_list())
+				console.log("Response error!");
 			return response.text();
 		})
 		.then((data) => {
 			tmp2.stop();
 			m_parsed_sql = JSON.parse(data);
-			update_email_list();
+			if (! update_email_list())
+				console.log("post request error");
 
 			m_timer.stop();
 
@@ -187,6 +191,7 @@ function App() {
 		else
 			m_last_item = m_first_item;
 		set_contacts(flist);
+		return 1;
 	}
 
 	function update_default() {
@@ -196,17 +201,19 @@ function App() {
 		else
 			m_last_item = m_first_item;
 		set_contacts(m_parsed_sql);
+		return 1;
 	}
 
 	function update_email_list() {
+		if (! m_parsed_sql[0]) {
+			set_contacts("");
+			return 0;
+		}
 		m_id_list = [ ];
-
-		if (m_parsed_sql === null)
-			err("m_parsed_sql is null");
+	
 		if (m_command === "next")
-			update_next();
-		else
-			update_default();
+			return update_next();
+		return update_default();
 	}
 
 	function click_update_email_list(value) {
