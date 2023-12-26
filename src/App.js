@@ -128,8 +128,6 @@ function App() {
 			key9: m_id_list,
 		};
 
-		if (m_command === "cur")
-
 		console.log("to: *"+m_to+"* from: *"+m_from+"*")
 		console.log("first: *"+m_first_item+"* last: *"+m_last_item+"*")
 
