@@ -89,7 +89,6 @@ function App() {
 			let tmp = response.text();
 
 			console.log("response from fetch: "+tmp);
-			//return response.text();
 			return tmp;
 		})
 		.then((data) => {
