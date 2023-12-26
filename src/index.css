@@ -47,3 +47,15 @@ code {
 .input_columns_last {
 	margin-left: 5px;
 }
+
+/* Dark Theme */
+@media (prefers-color-scheme: dark) {
+	body {
+	background-color: #1f1f1f;
+	color: #ffffff;
+    /* Other dark theme styles */
+  }
+  .r_list_display {
+	  color: #ffffff;
+  }
+}

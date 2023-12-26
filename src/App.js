@@ -9,6 +9,24 @@ import R_LIST_DISPLAY from './r_list_display';
 
 import './App.css';
 
+import { error_throw, error_set, error_append, error_disp } from './error_handler.js';
+
+function err_throw(error) {
+	return error_throw(error, import.meta.url);
+}
+
+function err_set(error) {
+	return error_set(error, import.meta.url);
+}
+
+function err_append(error) {
+	return error_append(error, import.meta.url);
+}
+
+function err_disp(error) {
+	return error_disp(error, import.meta.url);
+}
+
 var m_tab = null;
 var m_parsed_sql = null;
 //var m_email_amount = 50;
@@ -35,11 +53,84 @@ function App() {
 
 	const m_timer = new timer();
 
-	function err(err_str) {
-		let d = new Date();
-		throw new Error(d.toString().slice(0, 24)+"   "+err_str);
+/*
+	var g_err_str = "";
+	var g_error_stack = "";
+
+	function err_throw(error) {
+		err_append(error);
+		throw new Error(error);
 	}
 
+	function err_set(error) {
+		g_error_stack = error.stack;
+		if (!g_error_stack)
+			g_error_stack = "";
+		return err_append(error);
+	}
+
+	function err_append(err_str) {
+		g_err_str += err_inner(err_str);
+		return -1;
+	}
+
+	function err_disp(error) {
+		if (typeof(error) === 'object' && error && error.stack) {
+			if (g_error_stack.length < 1)
+				g_error_stack = error.stack;
+		} else if (typeof(error) === 'string') {
+			err_append(error);
+		}
+		//g_error_stack = "";
+		if (g_error_stack.length > 0)
+			err_append(g_error_stack);
+		console.log(g_err_str);
+		g_err_str = "";
+		g_error_stack = "";
+		return -1;
+	}
+
+	function err_inner(err_str) {
+		let tmp = "";
+		let d = new Date();
+		tmp = d.toString().slice(4, 24)+" "+__filename+": "+err_str+"\n";
+		return tmp;
+	}
+*/
+
+
+	/*
+	var g_err_str = "";
+	var g_error_stack = "";
+
+	function err_set(err_str) {
+		try {
+			throw new Error(err_str);
+		} catch (error) {
+			g_error_stack = error.stack;
+			return err_append(error);
+		}
+	}
+
+	function err_append(err_str) {
+		g_err_str += err_inner(err_str);
+		return -1;
+	}
+
+	function err_disp(err_str) {
+		err_append(err_str);
+		err_append(err_str.stack);
+		console.log(g_err_str+g_error_stack);
+		return -1;
+	}
+
+	function err_inner(err_str) {
+		let tmp = "";
+		let d = new Date();
+		tmp = d.toString().slice(4, 24)+" "+__filename+": "+err_str+"\n";
+		return tmp;
+	}
+*/
 	function reset_column_inputs() {
 		setFrom("");
 		setTo("");
@@ -63,10 +154,23 @@ function App() {
 		m_tab.document.body.innerHTML = em_body;
 	}
 
+	function inner_func() {
+		err_set("initial failure");
+	}
+
+	function simple_failed_function() {
+		if (inner_func() < 0)
+			return err_append("(in simple_failed_function)");
+		return 0;
+	}
+
 	// Called during refresh of page and inital loading
 	function display_update() {
 		let dtmp = new timer();
 		let ftmp = new timer();
+
+		//if (simple_failed_function() < 1)
+		//	return err_disp("display_update 1");
 
 		ftmp.start();
 
@@ -85,17 +189,17 @@ function App() {
 			m_parsed_sql = JSON.parse(data);
 			//if (!m_parsed_sql || !m_parsed_sql[0])
 			//	err("Data from the website gave an error");
-			if (! update_email_list())
-				console.log("display_update error!");
+			if (update_email_list() < 0)
+				err_throw("display_update: update_email_list");
+				//console.log("display_update error!");
 
 			dtmp.stop();
 
-			console.log("in display_update()");
-			console.log("fetch timer: \t\t"+ftmp.get_elapsed_milli());
-			console.log(".then data timer: \t"+dtmp.get_elapsed_milli());
+			console.log("fetch timer: \t\t"+ftmp.get_elapsed_milli()+"        .then data timer: \t"+dtmp.get_elapsed_milli());
 		})
 		.catch(error => {
-			err("An error occurred in display_update: "+error);
+			err_disp(error);
+			//console.log(err("An error occurred in display_update: "+error.stack));
 		});
 	}
 
@@ -132,19 +236,26 @@ function App() {
 			body: JSON.stringify(postData), // Convert data to JSON format
 		})
 		.then((response) => {
+			console.log("(in .then response)");
 			tmp1.stop();
 			tmp2.start();
-			if (! response.ok)
-				err("Network response was not ok: "+response.text());
-			if (! update_email_list())
-				console.log("Response error!");
+
+			if (!response.ok) ////////////// here
+				err_throw("handle_post_request .then response is not ok");
+				//throw new Error("network response .then response failed");
+				//return Promise.reject("network response .then response: ");
+			if (update_email_list() < 0)
+				err_throw("handle_post_request .then response");
 			return response.text();
-		})
+		})//, promise_error("failed promise chain 2"))
 		.then((data) => {
+			console.log("(in .then data)");
 			tmp2.stop();
 			m_parsed_sql = JSON.parse(data);
-			if (! update_email_list())
-				console.log("post request error");
+			if (update_email_list() < 0)
+				err_throw("handle_post_request .then data");
+
+			//query_str.query to db_query.qstr
 
 			m_timer.stop();
 
@@ -155,8 +266,19 @@ function App() {
 			console.log(" ");
 		})
 		.catch((error) => {
-			err("POST request error: "+error);
+			err_disp(error);
+			//promise_error(error);
+			//return err_set("promise chain in .catch(error)");
+			//console.log(err("catch: "+error+": "+error.stack));
 		});
+		return 0;
+	}
+
+	function promise_error(error) {
+		console.log("---");
+		console.log("in promise_error: "+error+", and stack: "+error.stack);
+		console.log("---\n");
+		throw (error);
 	}
 
 	/*
@@ -202,12 +324,13 @@ function App() {
 			m_last_item = m_first_item;
 		set_contacts(m_parsed_sql);
 		return 1;
+		//return err_set("update_default: early exit");
 	}
 
 	function update_email_list() {
 		if (! m_parsed_sql[0]) {
 			set_contacts("");
-			return 0;
+			return err_set("update_email_list: returned sql is null");
 		}
 		m_id_list = [ ];
 	
@@ -227,7 +350,12 @@ function App() {
 			}
 		}
 		m_timer.start();
-		handle_post_request(value);
+		try {
+			handle_post_request(value)
+		} catch (error) {
+			console.log("caught error after handle_post_request");
+			err_disp("click_update_email_list: "+error.stack);
+		}
 	}
 	
 	/*
