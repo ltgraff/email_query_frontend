@@ -13,15 +13,6 @@ const r_list_display = (props) => {
 
 	disp.set_spacing(defs);
 
-/*	if (! items) {
-		return (
-		<div className="r_list_display">
-		{disp.spacing_display("From", "To", "Subject", "Received")}
-		{m_timer.restart()}
-		{console.log("timer: "+m_timer.get_elapsed_milli())}
-		</div>
-		);
-	}*/
 	return (
 		<div className="r_list_display">
 		{disp.spacing_display("From", "To", "Subject", "Received")}
