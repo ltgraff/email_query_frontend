@@ -134,9 +134,9 @@ function App() {
 		fetch('http://localhost:3001/api/send-data', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json', // Specify the content type
+				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(postData), // Convert data to JSON format
+			body: JSON.stringify(postData),
 		})
 		.then((response) => {
 			console.log("(in .then response)");
@@ -144,7 +144,7 @@ function App() {
 			tmp2.start();
 
 			if (!response.ok) ////////////// here
-				err_throw("handle_post_request .then response is not ok");
+				err_throw(new Error("handle_post_request .then response is not ok"));
 			if (update_email_list() < 0)
 				err_throw("handle_post_request .then response");
 			return response.text();
@@ -168,13 +168,6 @@ function App() {
 			err_disp(error);
 		});
 		return 0;
-	}
-
-	function promise_error(error) {
-		console.log("---");
-		console.log("in promise_error: "+error+", and stack: "+error.stack);
-		console.log("---\n");
-		throw (error);
 	}
 
 	/*
@@ -225,7 +218,7 @@ function App() {
 	function update_email_list() {
 		if (! m_parsed_sql[0]) {
 			set_contacts("");
-			return err_set("update_email_list: returned sql is null");
+			return 0;
 		}
 		m_id_list = [ ];
 	
