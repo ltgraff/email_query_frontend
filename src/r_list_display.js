@@ -13,7 +13,7 @@ const r_list_display = (props) => {
 	return (
 		<div className="r_list_display" data-testid="r_list_display-test">
 		{disp.spacing_display("From", "To", "Subject", "Received")}
-		{items && items.map((item) => {
+		{Array.isArray(items) && items.map((item) => {
 			const spacing_result = disp.spacing_display(item.em_from, item.em_to, item.em_subject, item.received);
 			return (
 					<button className="email_item" data-testid={"r_list_display-button-"+item.eid} key={item.eid} onClick={() => props.click_select_email(item.em_body)}>{spacing_result}</button>
