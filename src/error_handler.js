@@ -43,13 +43,19 @@ function err_disp(error) {
 var g_error_str = "";
 var g_error_stack = "";
 
+function error_reset() {
+	g_error_str = "";
+	g_error_stack = "";
+}
+
 function error_throw(error, fn) {
 	error_append(error, fn);
 	throw new Error(error);
 }
 
 function error_set(error, fn) {
-	g_error_stack = error.stack;
+	if (error && error.stack)
+		g_error_stack = error.stack;
 	if (!g_error_stack)
 		g_error_stack = "";
 	return error_append(error, fn);
@@ -64,7 +70,7 @@ function error_disp(error, fn) {
 	if (typeof(error) === 'object' && error && error.stack) {
 		if (g_error_stack.length < 1)
 			g_error_stack = error.stack;
-	} else if (typeof(error) === 'string') {
+	} else {
 		error_append(error, fn);
 	}
 	if (g_error_stack.length > 0)
@@ -101,13 +107,14 @@ function error_inner(error_str, fn) {
 	} else  {
 		fn = "<unknown filename>: ";
 	}
-	if (!error_str)
+	if (!error_str || typeof(error_str) !== "string")
 		error_str = "<unknown error>";
 	tmp = d.toString().slice(4, 24)+" "+fn+error_str+"\n";
 	return tmp;
 }
 
 export {
+	error_reset,
 	error_throw,
 	error_set,
 	error_append,
