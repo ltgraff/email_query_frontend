@@ -35,13 +35,25 @@ var m_id_list = [ ];
 var m_command = "cur";
 
 function App() {
-	const [contacts, set_contacts] = useState(['hiya! this is the initial state']);
+	const [contacts, set_contacts] = useState("");
 	const [loading, set_loading] = useState(true);
-	const [m_date_start, setDateStart] = useState("");
-	const [m_date_end, setDateEnd] = useState("");
-	const [m_from, setFrom] = useState("");
-	const [m_to, setTo] = useState("");
-	const [m_subject, setSubject] = useState("");
+
+	const form_initial_state = {
+		date_start:  "",
+		date_end:  "",
+		from: "",
+		to:  "",
+		subject: ""
+	}
+
+	const [form, set_form] = useState(form_initial_state);
+	const handle_change = (e) => {
+		set_form({
+			...form,
+			[e.target.name]: e.target.value
+		});
+	};
+
 	useEffect(() => {
 		display_update();
 		// Disable useEffect dependency warning
@@ -53,11 +65,7 @@ function App() {
 	const m_timer = new timer();
 
 	function reset_column_inputs() {
-		setFrom("");
-		setTo("");
-		setSubject("");
-		setDateStart("");
-		setDateEnd("");
+		set_form(form_initial_state);
 	}
 
 	function click_select_email(em_body) {
@@ -118,17 +126,17 @@ function App() {
 		m_command = cmd;
 		const postData = {
 			key1: m_command,
-			key2: m_to,
-			key3: m_from,
-			key4: m_subject,
-			key5: m_date_start,
-			key6: m_date_end,
+			key2: form.to,
+			key3: form.from,
+			key4: form.subject,
+			key5: form.date_start,
+			key6: form.date_end,
 			key7: m_first_item,
 			key8: m_last_item,
 			key9: m_id_list,
 		};
 
-		console.log("to: *"+m_to+"* from: *"+m_from+"*")
+		console.log("to: *"+form.to+"* from: *"+form.from+"*")
 		console.log("first: *"+m_first_item+"* last: *"+m_last_item+"*")
 
 		fetch('http://localhost:3001/api/send-data', {
@@ -267,9 +275,9 @@ function App() {
 			<R_COMMANDS onChildClick={click_update_email_list}/>
 			<br />
 			<br />
-			<input className="input_columns" type="text" value={m_from} onChange={(e) => setFrom(e.target.value)}/>
-			<input className="input_columns" type="text" value={m_to} onChange={(e) => setTo(e.target.value)}/>
-			<input className="input_columns_last" type="text" value={m_subject} onChange={(e) => setSubject(e.target.value)}/>
+			<input className="input_columns" type="text" name="from" value={form.from} onChange={handle_change}/>
+			<input className="input_columns" type="text" name="to" value={form.to} onChange={handle_change}/>
+			<input className="input_columns_last" type="text" name="subject" value={form.subject} onChange={handle_change}/>
 				<div style={{
 					width:		'1520px',
 					height:		'550px',
@@ -286,7 +294,7 @@ function App() {
 			</div>
 				)
 			}
-		{"first: "+m_from} {m_to} {m_subject}
+		{"first: "+form.from} {form.to} {form.subject}
 		</main>
 	);
 }
