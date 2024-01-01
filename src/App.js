@@ -3,13 +3,13 @@
 import React, {useState, useEffect} from 'react';
 import DOMPurify from 'dompurify';
 
-import timer from './timer.js';
-import R_COMMANDS from './r_commands';
-import R_LIST_DISPLAY from './r_list_display';
+import timer from "./timer.mjs";
+import R_COMMANDS from "./r_commands.mjs";
+import R_LIST_DISPLAY from "./r_list_display.mjs";
 
 import './App.css';
 
-import { error_throw, error_set, error_append, error_disp } from './error_handler.js';
+import { error_throw, error_set, error_append, error_disp } from "./error_handler.mjs";
 
 function err_throw(error) {
 	return error_throw(error, import.meta.url);

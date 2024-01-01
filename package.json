@@ -1,5 +1,5 @@
 {
-  "name": "hello-world",
+  "name": "email_query_frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -18,7 +18,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "jest --coverage",
+    "test": "jest --coverage --config=jest.config.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -46,8 +46,5 @@
     "babel-jest": "^29.7.0",
     "jest": "^27.5.1",
     "react-test-renderer": "^18.2.0"
-  },
-  "jest": {
-	  "testEnvironment": "jsdom"
   }
 }

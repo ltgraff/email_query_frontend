@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
-import R_LIST_DISPLAY from '../r_list_display.js';
 import { render, screen, cleanup } from '@testing-library/react';
+import R_LIST_DISPLAY from '../r_list_display.mjs';
 
 //	screen.debug();
 

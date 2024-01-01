@@ -1,6 +1,6 @@
 import React from 'react';
 
-import STRING_SPACING from './string_spacing.js';
+import STRING_SPACING from "./string_spacing.mjs";
 
 const r_list_display = (props) => {
 	const items = props.items;

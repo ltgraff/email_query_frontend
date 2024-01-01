@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom';
-import { error_reset, error_throw, error_set, error_append, error_disp } from "../error_handler.js";
+import { error_reset, error_throw, error_set, error_append, error_disp } from "../error_handler.mjs";
 
 const mocked_log = jest.spyOn(console, 'log');
 
 mocked_log.mockImplementation(() => {});
 
 afterAll(() => {
-	mocked_log.mockRestore();
+	//mocked_log.mockRestore();
+	jest.clearAllMocks();
 	error_reset();
 });
 
