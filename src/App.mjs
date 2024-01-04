@@ -1,5 +1,23 @@
 // npm start
 
+
+/*import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+
+// import required css from library
+import "react-datepicker/dist/react-datepicker.css";
+
+// main implementation. using selected and onChange as main props to get and change the selected date value
+const App = () => {
+  const [startDate, setStartDate] = useState(new Date());
+  return (
+    <DatePicker.default />
+  );
+};
+
+export default App;
+*/
+
 import React, {useState, useEffect} from 'react';
 import DOMPurify from 'dompurify';
 
@@ -8,6 +26,10 @@ import R_COMMANDS from "./r_commands.mjs";
 import R_LIST_DISPLAY from "./r_list_display.mjs";
 
 import './App.css';
+
+import R_DATE_PICKER from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 import { error_throw, error_set, error_append, error_disp } from "./error_handler.mjs";
 
@@ -34,6 +56,7 @@ var m_last_item = null;
 var m_id_list = [ ];
 var m_command = "cur";
 
+
 function App() {
 	const [contacts, set_contacts] = useState("");
 	const [loading, set_loading] = useState(true);
@@ -45,6 +68,9 @@ function App() {
 		to:  "",
 		subject: ""
 	}
+
+	const [date_selected_start, set_date_start] = useState("");
+	const [date_selected_end, set_date_end] = useState("");
 
 	const [form, set_form] = useState(form_initial_state);
 	const handle_change = (e) => {
@@ -66,6 +92,8 @@ function App() {
 
 	function reset_column_inputs() {
 		set_form(form_initial_state);
+		set_date_start("");
+		set_date_end("");
 	}
 
 	function click_select_email(em_body) {
@@ -87,6 +115,9 @@ function App() {
 	function display_update() {
 		let dtmp = new timer();
 		let ftmp = new timer();
+
+		Object.getOwnPropertyNames(R_DATE_PICKER.default.prototype).join("\n")
+		print_object(R_DATE_PICKER);
 
 		ftmp.start();
 
@@ -124,13 +155,13 @@ function App() {
 		tmp1.start();
 
 		m_command = cmd;
-		const postData = {
+		const post_data = {
 			key1: m_command,
 			key2: form.to,
 			key3: form.from,
 			key4: form.subject,
-			key5: form.date_start,
-			key6: form.date_end,
+			key5: date_selected_start,
+			key6: date_selected_end,
 			key7: m_first_item,
 			key8: m_last_item,
 			key9: m_id_list,
@@ -144,7 +175,7 @@ function App() {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(postData),
+			body: JSON.stringify(post_data),
 		})
 		.then((response) => {
 			console.log("(in .then response)");
@@ -253,7 +284,120 @@ function App() {
 			err_disp("click_update_email_list: "+error.stack);
 		}
 	}
-	
+
+	/*
+
+	function get_all_functions(to_check) {
+		let props = [];
+		let obj = to_check;
+		do {
+			props = props.concat(Object.getOwnPropertyNames(obj));
+		} while (obj = Object.getPrototypeOf(obj));
+
+		return props.sort().filter(function(e, i, arr) {
+			if (e != arr[i+1] && typeof to_check[e] == 'function')
+				return true;
+		});
+	}
+
+	function analyze_class(cls) {
+		let ret = "";
+		const tmp_keys = Object.keys(cls);
+
+		ret = "data:\n";
+		ret += "-----------\n";
+		ret += tmp_keys.map((item, idx) => {
+			console.log(idx+" with item: "+item);
+			return idx+" "+item;
+		}).join("\n");
+		ret += "\n\nmethods:\n-----------\n";
+		ret += get_all_functions(cls).join("\n");
+		ret += "\n-----------\n";
+		return ret;
+	}
+	*/
+
+	function get_all_prototypes(to_check) {
+		let props = [];
+		let obj = to_check;
+		try {
+			do {
+				props = props.concat(Object.getOwnPropertyNames(obj));
+			} while (obj = Object.getPrototypeOf(obj));
+
+			return props.sort().filter(function(e, i, arr) {
+				if (e != arr[i+1] && typeof to_check[e] == 'function')
+					return true;
+			});
+		} catch (error) {
+			return [ ];
+		}
+	}
+
+	function get_object_data(cls) {
+		try {
+			let tmp = new cls();
+			const tmp_keys = Object.keys(tmp);
+			return tmp_keys.join("\n");
+		} catch (error) {
+		}
+		return "(no data)";
+	}
+
+	function get_class_functions(cls) {
+		let tmp = cls;
+		let cls_funcs = [ ];
+		for (var id in tmp) {
+			try {
+				if (typeof(cls[id]) == "function") {
+					cls_funcs.push(id + ": " + tmp[id].toString());
+					console.log("added");
+				}
+			} catch (error) {
+				cls_funcs.push(id + ": inaccessible");
+			}
+		}
+		return cls_funcs.join("\n");
+	}
+
+	function analyze_class(cls) {
+		let ret = "";
+
+		ret = "data:\n-----------\n";
+		ret += get_object_data(cls);
+		ret += "\n-----------\n\n";
+
+		ret += "prototypes:\n-----------\n";
+		ret += get_all_prototypes(cls).join("\n");
+		ret += "\n-----------\n\n";
+
+		ret += "functions:\n-----------\n";
+		ret += get_class_functions(cls);
+		ret += "\n-----------\n";
+		return ret;
+	}
+
+	/*
+
+		timer:
+			data works
+			no prototypes
+			no functions
+
+		new timer:
+			no data
+			prototypes
+			no functions
+
+		R_DATE_PICKER:
+			no data
+			prototypes
+			functions
+	*/
+	function print_object(obj_class) {
+		console.log(analyze_class(timer));
+	}
+
 	/*
 	* Render the email html page in a safeish manner
 	*/
@@ -263,6 +407,14 @@ function App() {
 			<div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
 		);
 	}
+
+	//<DatePicker selected={form.date_start} onSelect={handle_date_change} />
+//			<input className="input_columns" type="text" name="date_start" value={form.date_start} onChange={handle_change}/>
+//			<input className="input_columns_last" type="text" name="date_end" value={form.date_end} onChange={handle_change}/>
+
+	//	return (
+	//		 <DatePicker dateFormat="DD-MM-YYYY" selected={'01-01-2024'} />
+	//	);
 
 	return (
 		<main>
@@ -277,7 +429,9 @@ function App() {
 			<br />
 			<input className="input_columns" type="text" name="from" value={form.from} onChange={handle_change}/>
 			<input className="input_columns" type="text" name="to" value={form.to} onChange={handle_change}/>
-			<input className="input_columns_last" type="text" name="subject" value={form.subject} onChange={handle_change}/>
+			<input className="input_columns" type="text" name="subject" value={form.subject} onChange={handle_change}/>
+			<R_DATE_PICKER.default className="input_columns" selected={date_selected_start} onChange={set_date_start}/>
+			<R_DATE_PICKER.default className="input_columns" selected={date_selected_end} onChange={set_date_end}/>
 				<div style={{
 					width:		'1520px',
 					height:		'550px',
@@ -294,7 +448,6 @@ function App() {
 			</div>
 				)
 			}
-		{"first: "+form.from} {form.to} {form.subject}
 		</main>
 	);
 }
