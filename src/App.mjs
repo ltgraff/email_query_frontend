@@ -1,23 +1,5 @@
 // npm start
 
-
-/*import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-
-// import required css from library
-import "react-datepicker/dist/react-datepicker.css";
-
-// main implementation. using selected and onChange as main props to get and change the selected date value
-const App = () => {
-  const [startDate, setStartDate] = useState(new Date());
-  return (
-    <DatePicker.default />
-  );
-};
-
-export default App;
-*/
-
 import React, {useState, useEffect} from 'react';
 import DOMPurify from 'dompurify';
 
@@ -285,38 +267,6 @@ function App() {
 		}
 	}
 
-	/*
-
-	function get_all_functions(to_check) {
-		let props = [];
-		let obj = to_check;
-		do {
-			props = props.concat(Object.getOwnPropertyNames(obj));
-		} while (obj = Object.getPrototypeOf(obj));
-
-		return props.sort().filter(function(e, i, arr) {
-			if (e != arr[i+1] && typeof to_check[e] == 'function')
-				return true;
-		});
-	}
-
-	function analyze_class(cls) {
-		let ret = "";
-		const tmp_keys = Object.keys(cls);
-
-		ret = "data:\n";
-		ret += "-----------\n";
-		ret += tmp_keys.map((item, idx) => {
-			console.log(idx+" with item: "+item);
-			return idx+" "+item;
-		}).join("\n");
-		ret += "\n\nmethods:\n-----------\n";
-		ret += get_all_functions(cls).join("\n");
-		ret += "\n-----------\n";
-		return ret;
-	}
-	*/
-
 	function get_all_prototypes(to_check) {
 		let props = [];
 		let obj = to_check;
@@ -408,14 +358,6 @@ function App() {
 		);
 	}
 
-	//<DatePicker selected={form.date_start} onSelect={handle_date_change} />
-//			<input className="input_columns" type="text" name="date_start" value={form.date_start} onChange={handle_change}/>
-//			<input className="input_columns_last" type="text" name="date_end" value={form.date_end} onChange={handle_change}/>
-
-	//	return (
-	//		 <DatePicker dateFormat="DD-MM-YYYY" selected={'01-01-2024'} />
-	//	);
-
 	return (
 		<main>
 			{loading === true ? (
@@ -427,11 +369,17 @@ function App() {
 			<R_COMMANDS onChildClick={click_update_email_list}/>
 			<br />
 			<br />
+			<pre> From                                                 To                                                   Subject</pre>
 			<input className="input_columns" type="text" name="from" value={form.from} onChange={handle_change}/>
 			<input className="input_columns" type="text" name="to" value={form.to} onChange={handle_change}/>
-			<input className="input_columns" type="text" name="subject" value={form.subject} onChange={handle_change}/>
+			<input className="input_columns_last" type="text" name="subject" value={form.subject} onChange={handle_change}/>
+			<br/>
+			<br/>
+			<pre> Start Date                                           End Date</pre>
 			<R_DATE_PICKER.default className="input_columns" selected={date_selected_start} onChange={set_date_start}/>
 			<R_DATE_PICKER.default className="input_columns" selected={date_selected_end} onChange={set_date_end}/>
+			<br/>
+			<br/>
 				<div style={{
 					width:		'1520px',
 					height:		'550px',
