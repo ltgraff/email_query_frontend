@@ -98,9 +98,6 @@ function App() {
 		let dtmp = new timer();
 		let ftmp = new timer();
 
-		Object.getOwnPropertyNames(R_DATE_PICKER.default.prototype).join("\n")
-		print_object(R_DATE_PICKER);
-
 		ftmp.start();
 
 		fetch('http://localhost:3001').then(response => {
@@ -266,32 +263,28 @@ function App() {
 		}
 	}
 
-	function get_all_prototypes(to_check) {
-		let props = [];
-		let obj = to_check;
+	function get_all_prototypes(cls) {
+		let ret = "";
 		try {
-			do {
-				props = props.concat(Object.getOwnPropertyNames(obj));
-				obj = Object.getPrototypeOf(obj);
-			} while (obj);
-			return props.sort().filter((e, i, arr) => {
-				if (e !== arr[i+1] && typeof to_check[e] == 'function')
-					return true;
-				return false;
-			});
+			ret += Object.getOwnPropertyNames(cls.prototype).join("\n");
 		} catch (error) {
-			return [ ];
+			try {
+				ret += Object.getOwnPropertyNames(cls).join("\n");
+			} catch (error) {
+				ret = "<Could not get class prototypes>";
+			}
 		}
+		return ret;
 	}
 
 	function get_object_data(cls) {
 		try {
-			let tmp = new cls();
-			const tmp_keys = Object.keys(tmp);
-			return tmp_keys.join("\n");
+			var tmp = new cls();
 		} catch (error) {
+			return "<Could not create object via constructor>";
 		}
-		return "(no data)";
+		const tmp_keys = Object.keys(tmp);
+		return tmp_keys.join("\n");
 	}
 
 	function get_class_functions(cls) {
@@ -299,14 +292,13 @@ function App() {
 		let cls_funcs = [ ];
 		for (var id in tmp) {
 			try {
-				if (typeof(cls[id]) == "function") {
-					cls_funcs.push(id + ": " + tmp[id].toString());
-					console.log("added");
-				}
+				cls_funcs.push(id + ": " + tmp[id].toString());
 			} catch (error) {
 				cls_funcs.push(id + ": inaccessible");
 			}
 		}
+		if (cls_funcs.length < 1)
+			return "<class function information not found>";
 		return cls_funcs.join("\n");
 	}
 
@@ -318,40 +310,13 @@ function App() {
 		ret += "\n-----------\n\n";
 
 		ret += "prototypes:\n-----------\n";
-		ret += get_all_prototypes(cls).join("\n");
+		ret += get_all_prototypes(cls);
 		ret += "\n-----------\n\n";
 
 		ret += "functions:\n-----------\n";
 		ret += get_class_functions(cls);
 		ret += "\n-----------\n";
 		return ret;
-	}
-
-	/*
-
-		timer:
-			data works
-			no prototypes
-			no functions
-
-		new timer:
-			no data
-			prototypes
-			no functions
-
-		R_DATE_PICKER:
-			no data
-			prototypes
-			functions
-	*/
-	function print_object(obj_class) {
-		console.log(analyze_class(timer));
-		console.log("test..");
-
-		let my_str = "this-is-my-string--";
-		// convert string to array, make a filter, use the length for chars found
-		let q = Array.from(my_str).filter((item) => item === "-").length;
-		console.log("found: "+q);
 	}
 
 	/*
