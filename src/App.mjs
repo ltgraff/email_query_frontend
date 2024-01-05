@@ -160,12 +160,11 @@ function App() {
 			body: JSON.stringify(post_data),
 		})
 		.then((response) => {
-			console.log("(in .then response)");
 			tmp1.stop();
 			tmp2.start();
 
-			if (!response.ok) ////////////// here
-				err_throw(new Error("handle_post_request .then response is not ok"));
+			if (!response.ok)
+				err_throw("handle_post_request received bad response");
 			if (update_email_list() < 0)
 				err_throw("handle_post_request .then response");
 			return response.text();
@@ -273,11 +272,12 @@ function App() {
 		try {
 			do {
 				props = props.concat(Object.getOwnPropertyNames(obj));
-			} while (obj = Object.getPrototypeOf(obj));
-
-			return props.sort().filter(function(e, i, arr) {
-				if (e != arr[i+1] && typeof to_check[e] == 'function')
+				obj = Object.getPrototypeOf(obj);
+			} while (obj);
+			return props.sort().filter((e, i, arr) => {
+				if (e !== arr[i+1] && typeof to_check[e] == 'function')
 					return true;
+				return false;
 			});
 		} catch (error) {
 			return [ ];
@@ -346,6 +346,12 @@ function App() {
 	*/
 	function print_object(obj_class) {
 		console.log(analyze_class(timer));
+		console.log("test..");
+
+		let my_str = "this-is-my-string--";
+		// convert string to array, make a filter, use the length for chars found
+		let q = Array.from(my_str).filter((item) => item === "-").length;
+		console.log("found: "+q);
 	}
 
 	/*
