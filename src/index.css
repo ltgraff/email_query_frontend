@@ -1,21 +1,48 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	font-size: 14px;
+	font-weight: bolder;
+	background-color: #CCE6FF;
+	font-family: 'Roboto', sans-serif;
+	/*
+	background-image: url("../tmp.jpg");
+	background-repeat: no-repeat;
+	*/
+	margin: 2;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+	'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+	sans-serif;
+/*
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+*/
+}
+
+.r_command_item {
+	font-size: 14px;
+	font-weight: bolder;
+	height: 29px;
+	vertical-align: 'center';
+	margin-right: 20px;
+	border: 1px solid #000000;
+	background-color: #E6F3FF;
+	width: 200px;
+	border-radius: 15px;
+}
+
+.r_command_item:hover {
+	background-color: #AAAAAA;
 }
 
 /* Individual buttons in the r_list_display */
 .email_item {
-	font-size: 12px;
+	font-size: 14px;
 	height: 29px;
 	vertical-align: 'center';
-	color: #000000;
-	border: 1px solid #AAAAAA;
+	background-color: #E6F3FF;
+	border: 1px solid #000000;
+	border-radius: 5px;
 	/*
-	background-color: #AAAAAA;
 	*/
 	margin-bottom: 2px;
 	line-height: 0px;
@@ -23,6 +50,10 @@ body {
 	text-decoration: none;
 	padding: 0px;
 	border-radius: 8px;
+}
+
+.email_item:hover {
+	background-color: #AAAAAA;
 }
 
 /* Top heading */
@@ -34,18 +65,17 @@ body {
 	border: 0px solid #fafafa;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
 .input_columns {
-	margin-right: 186px;
-	margin-left: 5px;
+	width: 150px;
+	background-color: #E6F3FF;
+	margin-right: 279px;
+	margin-left: 9px;
 }
 
 .input_columns_last {
-	margin-left: 5px;
+	width: 150px;
+	background-color: #E6F3FF;
+	margin-left: 10px;
 }
 
 /* Dark Theme */

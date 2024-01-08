@@ -7,28 +7,28 @@ import timer from "./timer.mjs";
 import R_COMMANDS from "./r_commands.mjs";
 import R_LIST_DISPLAY from "./r_list_display.mjs";
 
-import './App.css';
-
 import R_DATE_PICKER from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
 import { error_throw, error_set, error_append, error_disp } from "./error_handler.mjs";
 
+const __FILE__ = "App.mjs";
+
 function err_throw(error) {
-	return error_throw(error, import.meta.url);
+	return error_throw(error, __FILE__);
 }
 
 function err_set(error) {
-	return error_set(error, import.meta.url);
+	return error_set(error, __FILE__);
 }
 
 function err_append(error) {
-	return error_append(error, import.meta.url);
+	return error_append(error, __FILE__);
 }
 
 function err_disp(error) {
-	return error_disp(error, import.meta.url);
+	return error_disp(error, __FILE__);
 }
 
 var m_tab = null;
@@ -98,6 +98,8 @@ function App() {
 		let dtmp = new timer();
 		let ftmp = new timer();
 
+		console.log("display_update");
+
 		ftmp.start();
 
 		fetch('http://localhost:3001').then(response => {
@@ -111,6 +113,7 @@ function App() {
 		})
 		.then((data) => {
 			set_loading(false);
+			console.log(data);
 			m_parsed_sql = JSON.parse(data);
 			if (!m_parsed_sql || !m_parsed_sql[0])
 				err_throw("display_update: Could not parse SQL");
@@ -162,8 +165,8 @@ function App() {
 
 			if (!response.ok)
 				err_throw("handle_post_request received bad response");
-			if (update_email_list() < 0)
-				err_throw("handle_post_request .then response");
+			//if (update_email_list() < 0)
+			//	err_throw("handle_post_request .then response");
 			return response.text();
 		})
 		.then((data) => {
@@ -223,6 +226,8 @@ function App() {
 	}
 
 	function update_default() {
+		console.log("update_default");
+
 		m_first_item = m_parsed_sql[0].received;
 		if (m_parsed_sql.length-1 > -1)
 			m_last_item = m_parsed_sql[m_parsed_sql.length-1].received;
@@ -233,10 +238,12 @@ function App() {
 	}
 
 	function update_email_list() {
+		console.log("update_email_list");
 		if (! m_parsed_sql[0]) {
 			set_contacts("");
 			return 0;
 		}
+		console.log("update_email_list (do some work)");
 		m_id_list = [ ];
 	
 		if (m_command === "next")
@@ -330,7 +337,7 @@ function App() {
 	}
 
 	return (
-		<main>
+		<main data-testid="app-main">
 			{loading === true ? (
 				<div>
 					<h1>Loading..</h1>

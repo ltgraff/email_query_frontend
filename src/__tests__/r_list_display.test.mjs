@@ -19,6 +19,7 @@ var contacts = [{
 
 const my_func = jest.fn();
 
+describe("UT tests", () => {
 test("UT r_list_display with null contacts value", () => {
 	const bad_contacts = null;
 	render(<R_LIST_DISPLAY click_select_email={my_func} items={bad_contacts} title="" />);
@@ -57,4 +58,5 @@ test("IT between elements in R_LIST_DISPLAY component", () => {
 	expect(button_element).toBeInTheDocument();
 	button_element.click();
 	expect(my_func).toHaveBeenCalled();
+})
 })

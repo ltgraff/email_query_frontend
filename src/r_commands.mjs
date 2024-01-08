@@ -20,10 +20,10 @@ function r_commands({ onChildClick }) {
 
   return (
     <div>
-      <button onClick={() => handleButtonClick1()}> Prev </button>
-      <button onClick={() => handleButtonClick2()}> Refresh </button>
-      <button onClick={() => handleButtonClick3()}> Next </button>
-      <button onClick={() => handleButtonClick4()}> Reset </button>
+      <button data-testid="r_command_prev" className="r_command_item" onClick={() => handleButtonClick1()}> Prev </button>
+      <button data-testid="r_command_cur" className="r_command_item" onClick={() => handleButtonClick2()}> Refresh </button>
+      <button data-testid="r_command_next" className="r_command_item" onClick={() => handleButtonClick3()}> Next </button>
+      <button data-testid="r_command_reset" className="r_command_item" onClick={() => handleButtonClick4()}> Reset </button>
     </div>
   );
 }
