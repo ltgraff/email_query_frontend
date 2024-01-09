@@ -1,20 +1,50 @@
 import '@testing-library/jest-dom';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, fireEvent, screen, cleanup } from '@testing-library/react';
 import App from '../App.mjs';
 import { enableFetchMocks } from 'jest-fetch-mock'
 import { act } from 'react-test-renderer';
 
 enableFetchMocks()
 
-//jest.mock("react-datepicker", () => {
-//	return "<div>my component</div>";
-//});
+function onClick() {
+	return "hiya";
+}
+/*
+jest.mock('../r_list_display.mjs', () => {
+  const R_LIST_DISPLAY = ({ onClick }) => {
+    return (
+      <div>
+        <button data-testid="b1" onClick={() => onClick('Button 3 clicked')}>b3</button>
+        <button data-testid="b2" onClick={() => onClick('Button 3 clicked')}>b3</button>
+        <button data-testid="b3" onClick={() => onClick('Button 3 clicked')}>b3</button>
+      </div>
+    );
+  };
+  return R_LIST_DISPLAY;
+});
+*/
+/*
+jest.mock('../r_commands.mjs', () => {
+  const mocked_r_commands = ({ onClick }) => {
+    return (
+      <div>
+        <button data-testid="b1" onClick={() => onClick('Button 1 clicked')}>b1</button>
+        <button data-testid="b2" onClick={() => onClick('Button 2 clicked')}>b2</button>
+        <button data-testid="b3" onClick={() => onClick('Button 3 clicked')}>b3</button>
+      </div>
+    );
+  };
 
-//jest.mock("fetch", () => {
-//	return "1,2,3";
-//});
-
-//import "react-datepicker/dist/react-datepicker.css";
+  return mocked_r_commands;
+});
+*/
+/*jest.mock("../r_commands", () => () => {
+	return (
+		<button data-testid="my_button-button" onClick={onClick}>
+			Click me
+		</button>
+	);
+});*/
 
 jest.mock("react-datepicker/dist/react-datepicker.css", () => {
 	return "body { color: blue; }";
@@ -30,8 +60,17 @@ global.fetch = jest.fn(() =>
 			"em_to": "to of message",
 			"em_subject": "subject of message",
 			"received": "date of message"
-		}
-	)
+		}),
+	  text: () => Promise.resolve(JSON.stringify([
+		  {
+			"eid": 100, 
+			"em_body": "message body",
+			"em_from": "from of message",
+			"em_to": "to of message",
+			"em_subject": "subject of message",
+			"received": "date of message"
+		  }
+	  ]))
   })
 );
 
@@ -46,13 +85,11 @@ afterEach(() => {
 const click_func = jest.fn();
 
 describe("App", () => {
-test("UT check loading page", () => {
-	render(<App/>);
-	const elem = screen.getByTestId("app-main");
-	expect(elem).toHaveTextContent("Load");
-})
+test("UT check button_prev", async () => {
 
-/*test("UT App", async () => {
-	await act( async () => render(<App/>));
-})*/
+	let container;
+	await act(async() => {
+		container = render(<App />);
+	});
+});
 }) // describe

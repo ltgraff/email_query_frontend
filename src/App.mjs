@@ -8,8 +8,8 @@ import R_COMMANDS from "./r_commands.mjs";
 import R_LIST_DISPLAY from "./r_list_display.mjs";
 
 import R_DATE_PICKER from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
+import "react-datepicker/dist/react-datepicker.css";
 
 import { error_throw, error_set, error_append, error_disp } from "./error_handler.mjs";
 
@@ -92,6 +92,24 @@ function App() {
 		}
 		m_tab.document.body.innerHTML = em_body;
 	}
+	/*
+		fetch('http://localhost:3001')
+  .then(response => {
+    ftmp.stop();
+    dtmp.start();
+
+    return response.text(); // Return the Promise from response.text()
+  })
+  .then(data => {
+    set_loading(false);
+    console.log("response from fetch: " + data);
+    m_parsed_sql = JSON.parse(data);
+  })
+  .catch(error => {
+    // Handle errors if any
+    console.error('Error fetching data:', error);
+  });
+	*/
 
 	// Called during refresh of page and inital loading
 	function display_update() {
@@ -105,11 +123,7 @@ function App() {
 		fetch('http://localhost:3001').then(response => {
 			ftmp.stop();
 			dtmp.start();
-
-			let tmp = response.text();
-
-			console.log("response from fetch: "+tmp);
-			return tmp;
+			return response.text();
 		})
 		.then((data) => {
 			set_loading(false);
@@ -336,6 +350,22 @@ function App() {
 		);
 	}
 
+	/*
+	* For some reason, DatePicker is not importing quite correctly and requires DatePicker.default
+	* However, Jest expects it to function normally
+	* This function ensures both works
+	*/
+	const fix_date_picker = (R_DATE_PICKER, date_selected_end, set_date_end) => {
+		if (R_DATE_PICKER.default) {
+			return (
+				<R_DATE_PICKER.default className="input_columns" selected={date_selected_end} onChange={set_date_end} />
+			);
+		}
+		return (
+				<R_DATE_PICKER className="input_columns" selected={date_selected_end} onChange={set_date_end} />
+		);
+	};
+
 	return (
 		<main data-testid="app-main">
 			{loading === true ? (
@@ -354,12 +384,12 @@ function App() {
 			<br/>
 			<br/>
 			<pre> Start Date                                           End Date</pre>
-			<R_DATE_PICKER.default className="input_columns" selected={date_selected_start} onChange={set_date_start}/>
-			<R_DATE_PICKER.default className="input_columns" selected={date_selected_end} onChange={set_date_end}/>
+				{fix_date_picker(R_DATE_PICKER, date_selected_start, set_date_start)}
+				{fix_date_picker(R_DATE_PICKER, date_selected_end, set_date_end)}
 			<br/>
 			<br/>
 				<div style={{
-					width:		'1520px',
+					width:		'1800px',
 					height:		'550px',
 					overflowY:	'scroll',
 					padding:	'0px 0px'
