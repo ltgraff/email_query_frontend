@@ -92,24 +92,6 @@ function App() {
 		}
 		m_tab.document.body.innerHTML = em_body;
 	}
-	/*
-		fetch('http://localhost:3001')
-  .then(response => {
-    ftmp.stop();
-    dtmp.start();
-
-    return response.text(); // Return the Promise from response.text()
-  })
-  .then(data => {
-    set_loading(false);
-    console.log("response from fetch: " + data);
-    m_parsed_sql = JSON.parse(data);
-  })
-  .catch(error => {
-    // Handle errors if any
-    console.error('Error fetching data:', error);
-  });
-	*/
 
 	// Called during refresh of page and inital loading
 	function display_update() {
@@ -127,7 +109,6 @@ function App() {
 		})
 		.then((data) => {
 			set_loading(false);
-			console.log(data);
 			m_parsed_sql = JSON.parse(data);
 			if (!m_parsed_sql || !m_parsed_sql[0])
 				err_throw("display_update: Could not parse SQL");
@@ -282,62 +263,6 @@ function App() {
 			console.log("caught error after handle_post_request");
 			err_disp("click_update_email_list: "+error.stack);
 		}
-	}
-
-	function get_all_prototypes(cls) {
-		let ret = "";
-		try {
-			ret += Object.getOwnPropertyNames(cls.prototype).join("\n");
-		} catch (error) {
-			try {
-				ret += Object.getOwnPropertyNames(cls).join("\n");
-			} catch (error) {
-				ret = "<Could not get class prototypes>";
-			}
-		}
-		return ret;
-	}
-
-	function get_object_data(cls) {
-		try {
-			var tmp = new cls();
-		} catch (error) {
-			return "<Could not create object via constructor>";
-		}
-		const tmp_keys = Object.keys(tmp);
-		return tmp_keys.join("\n");
-	}
-
-	function get_class_functions(cls) {
-		let tmp = cls;
-		let cls_funcs = [ ];
-		for (var id in tmp) {
-			try {
-				cls_funcs.push(id + ": " + tmp[id].toString());
-			} catch (error) {
-				cls_funcs.push(id + ": inaccessible");
-			}
-		}
-		if (cls_funcs.length < 1)
-			return "<class function information not found>";
-		return cls_funcs.join("\n");
-	}
-
-	function analyze_class(cls) {
-		let ret = "";
-
-		ret = "data:\n-----------\n";
-		ret += get_object_data(cls);
-		ret += "\n-----------\n\n";
-
-		ret += "prototypes:\n-----------\n";
-		ret += get_all_prototypes(cls);
-		ret += "\n-----------\n\n";
-
-		ret += "functions:\n-----------\n";
-		ret += get_class_functions(cls);
-		ret += "\n-----------\n";
-		return ret;
 	}
 
 	/*
