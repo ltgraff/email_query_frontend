@@ -160,8 +160,6 @@ function App() {
 
 			if (!response.ok)
 				err_throw("handle_post_request received bad response");
-			//if (update_email_list() < 0)
-			//	err_throw("handle_post_request .then response");
 			return response.text();
 		})
 		.then((data) => {

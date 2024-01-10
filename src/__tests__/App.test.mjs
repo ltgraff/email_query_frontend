@@ -4,6 +4,8 @@ import App from '../App.mjs';
 import { enableFetchMocks } from 'jest-fetch-mock'
 import { act } from 'react-test-renderer';
 
+import { click_update_email } from "../App.mjs";
+
 enableFetchMocks()
 
 function onClick() {
@@ -70,7 +72,17 @@ global.fetch = jest.fn(() =>
 			"em_subject": "subject of message",
 			"received": "date of message"
 		  }
-	  ]))
+	  ])),
+	  ok: () => Promise.resolve(JSON.stringify([
+		  {
+			"eid": 100, 
+			"em_body": "message body",
+			"em_from": "from of message",
+			"em_to": "to of message",
+			"em_subject": "subject of message",
+			"received": "date of message"
+		  }
+	  ])),
   })
 );
 
@@ -85,11 +97,53 @@ afterEach(() => {
 const click_func = jest.fn();
 
 describe("App", () => {
-test("UT check button_prev", async () => {
+//test("UT check button_prev", async () => {
+//	const handle_click = jest.fn();
 
-	let container;
+//	await act(async() => {
+//		render(<App />);
+
+	//	const button1 = view.getByText("Prev");
+
+		//const button_element = screen.getByTestId("r_command_prev");
+//		button_element.click();
+//		expect(button_element).toBeValid();
+
+
+
+		/*const button_element = screen.getByTestId("r_command_reset");
+		button_element.click();
+		expect(button_element).toBeValid();
+		expect(click_func).toHaveBeenCalledWith("reset");*/
+
+		//fireEvent.click(container("click_update_email"));
+//		expect(handle_click).toHaveBeenCalled();
+//	});
+//	const button_element = screen.getByTestId("r_command_prev");
+//	button_element.click();
+//	expect(button_element).toBeValid();
+
+//});
+
+test("UT check button_reset", async () => {
 	await act(async() => {
-		container = render(<App />);
+		render(<App />);
 	});
+	const button_element = screen.getByTestId("r_command_reset"); // prev, cur, next, reset
+	await act(async() => {
+		button_element.click();
+	});
+	expect(button_element).toBeValid();
+});
+
+test("UT check button_next", async () => {
+	await act(async() => {
+		render(<App />);
+	});
+	const button_element = screen.getByTestId("r_command_next"); // prev, cur, next, reset
+	await act(async() => {
+		button_element.click();
+	});
+	expect(button_element).toBeValid();
 });
 }) // describe
