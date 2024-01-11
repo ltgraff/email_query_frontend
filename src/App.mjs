@@ -68,9 +68,29 @@ function App() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const [window_dim, window_dim_set] = useState({
+		width: window.innerWidth,
+		height: window.innerHeight,
+	});
+
+	useEffect(() => {
+		window.addEventListener('resize', window_dim_update);
+		return () => {
+			window.removeEventListener('resize', window_dim_update);
+		};
+	}, [window_dim]);
+
+
 	var m_display_string = "";
 
 	const m_timer = new timer();
+
+	const window_dim_update = () => {
+		window_dim_set({
+			width: window.innerWidth,
+			height: window.innerHeight,
+		});
+	};
 
 	function reset_column_inputs() {
 		set_form(form_initial_state);
@@ -289,6 +309,17 @@ function App() {
 		);
 	};
 
+	/*
+	* Determine what the height should be for the list display
+	*/
+	function determine_list_height() {
+		let ratio = 850/900;
+		let nw = ratio*(window_dim.height - 240);
+		if (nw < 140)
+			nw = 140;
+		return nw+"px";
+	}
+
 	return (
 		<main data-testid="app-main">
 			{loading === true ? (
@@ -313,7 +344,7 @@ function App() {
 			<br/>
 				<div style={{
 					width:		'1800px',
-					height:		'550px',
+					height:		determine_list_height(),
 					overflowY:	'scroll',
 					padding:	'0px 0px'
 				}}>
