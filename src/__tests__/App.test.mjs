@@ -42,6 +42,14 @@ global.fetch = jest.fn(() =>
 				"em_to": "to of message",
 				"em_subject": "subject of message",
 				"received": "date of message"
+			},
+			{
+				"eid": 120, 
+				"em_body": "body2",
+				"em_from": "from2",
+				"em_to": "to2",
+				"em_subject": "subject2",
+				"received": "date"
 			}
 		])),
 		ok: () => Promise.resolve(JSON.stringify([
@@ -52,6 +60,14 @@ global.fetch = jest.fn(() =>
 				"em_to": "to of message",
 				"em_subject": "subject of message",
 				"received": "date of message"
+			},
+			{
+				"eid": 120, 
+				"em_body": "body2",
+				"em_from": "from2",
+				"em_to": "to2",
+				"em_subject": "subject2",
+				"received": "date"
 			}
 		])),
 	})
@@ -65,14 +81,12 @@ afterEach(() => {
 	cleanup();
 });
 
-const click_func = jest.fn();
-
 describe("App", () => {
 test("UT check button_reset", async () => {
 	await act(async() => {
 		render(<App />);
 	});
-	const button_element = screen.getByTestId("r_command_reset"); // prev, cur, next, reset
+	const button_element = screen.getByTestId("r_command_reset");
 	await act(async() => {
 		button_element.click();
 	});
@@ -83,7 +97,7 @@ test("UT check button_next", async () => {
 	await act(async() => {
 		render(<App />);
 	});
-	const button_element = screen.getByTestId("r_command_next"); // prev, cur, next, reset
+	const button_element = screen.getByTestId("r_command_next");
 	await act(async() => {
 		button_element.click();
 	});
@@ -94,7 +108,7 @@ test("UT check button_prev", async () => {
 	await act(async() => {
 		render(<App />);
 	});
-	const button_element = screen.getByTestId("r_command_prev"); // prev, cur, next, reset
+	const button_element = screen.getByTestId("r_command_prev");
 	await act(async() => {
 		button_element.click();
 	});
@@ -105,10 +119,44 @@ test("UT check r_list_display popup", async () => {
 	await act(async() => {
 		render(<App />);
 	});
-	const button_element = screen.getByTestId("r_list_display-button-100"); // prev, cur, next, reset
+	const button_element = screen.getByTestId("r_list_display-button-100");
 	await act(async() => {
 		button_element.click();
 	});
 	expect(button_element).toBeValid();
+});
+
+test("UT check bad response", async () => {
+	jest.clearAllMocks();
+	const console_spy = jest.spyOn(console, "log");
+	global.fetch = jest.fn(() =>
+		Promise.resolve({
+			json: () => Promise.resolve(JSON.stringify(
+				{
+				}
+			)),
+		})
+	);
+	await act(async() => {
+		render(<App />);
+	});
+	expect(console_spy).toHaveBeenCalledWith(expect.stringContaining("TypeError: response.text is not a function"));
+});
+
+test("UT check bad SQL parsing", async () => {
+	jest.clearAllMocks();
+	const console_spy = jest.spyOn(console, "log");
+	global.fetch = jest.fn(() =>
+		Promise.resolve({
+			text: () => Promise.resolve(JSON.stringify(
+				{
+				}
+			)),
+		})
+	);
+	await act(async() => {
+		render(<App />);
+	});
+	expect(console_spy).toHaveBeenCalledWith(expect.stringContaining("Could not parse SQL"));
 });
 }) // describe
