@@ -84,7 +84,6 @@ function App() {
 		};
 	}, [window_dim]);
 
-
 	var m_display_string = "";
 
 	const m_timer = new timer();
@@ -103,17 +102,7 @@ function App() {
 	}
 
 	function click_select_email(em_to, em_from, em_received, em_body) {
-		if (m_tab === null) {
-			m_tab = window.open('', '_blank');
-			if (m_tab === null) {
-				console.log('New tab could not be opened, possibly disable popup blocker');
-				return;
-			}
-			m_tab.addEventListener('beforeunload', () => {  
-				m_tab = null;
-			});
-		}
-
+		open_tab();
 		const parser = new PostalMime();
 		parser.parse(em_body).then(email => {
 			let hdr = "To: "+em_to+"\nFrom: "+em_from+"\nDate: "+em_received+"\nSubject: "+email.subject;
@@ -128,6 +117,7 @@ function App() {
 		}).catch(error => {
 			console.error("mime parse error: "+error);
 		}); 
+		m_tab.document.head.innerHTML += "<link rel=\"icon\" href=\"email_icon.ico\" />";
 	}
 
 	// Called during refresh of page and inital loading
@@ -225,6 +215,20 @@ function App() {
 		return 0;
 	}
 
+	function open_tab() {
+		if (m_tab === null) {
+		//	m_tab = window.open('', '_blank');
+			m_tab = window.open('about:blank');
+			if (m_tab === null) {
+				console.log('New tab could not be opened, possibly disable popup blocker');
+				return;
+			}
+			m_tab.addEventListener('beforeunload', () => {  
+				m_tab = null;
+			});
+		}
+	}
+
 	/*
 	* Add an email item to the proper position of the list, by date descending
 	*/
@@ -305,47 +309,10 @@ function App() {
 		}
 	}
 
-
-
-
-
 	/*
 	* Render the email html page in a safeish manner
 	*/
 	function HtmlRenderer({ htmlContent }) {
-
-
-
-
-		//const MailParser = require('mailparser').MailParser;
-
-
-		// Create a new MailParser instance
-/*		const mailparser = new MailParser();
-
-		// Parse the raw email
-		mailparser.on('end', function(mailObject) {
-			// Display parsed email headers
-			console.log('From:', mailObject.headers.get('from'));
-			console.log('To:', mailObject.headers.get('to'));
-			console.log('Subject:', mailObject.headers.get('subject'));
-			console.log('Date:', mailObject.headers.get('date'));
-			console.log('Message-ID:', mailObject.headers.get('message-id'));
-			console.log('References:', mailObject.headers.get('references'));
-			console.log('In-Reply-To:', mailObject.headers.get('in-reply-to'));
-			console.log('Content-Type:', mailObject.headers.get('content-type'));
-			console.log('MIME-Version:', mailObject.headers.get('mime-version'));
-
-			// Display parsed email body
-			console.log('Body:', mailObject.text);
-		});
-
-		// Write the raw email content to the MailParser instance
-//		mailparser.write(rawEmail);
-//		mailparser.end();
-*/
-
-		//return htmlContent;
 		const sanitizedHtml = DOMPurify.sanitize(htmlContent);
 		return (
 			<div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
