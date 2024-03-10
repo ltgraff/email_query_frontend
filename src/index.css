@@ -1,7 +1,8 @@
 body {
 	font-size: 14px;
 	font-weight: bolder;
-	background-color: #CCE6FF;
+	background-color: #AAD5FF;
+	/*background-color: #CCE6FF;*/
 	font-family: 'Roboto', sans-serif;
 	/*
 	background-image: url("../tmp.jpg");
@@ -24,14 +25,14 @@ font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans
 	height: 29px;
 	vertical-align: 'center';
 	margin-right: 20px;
-	border: 1px solid #000000;
+/*	border: 1px solid #000000;*/
 	background-color: #E6F3FF;
 	width: 200px;
-	border-radius: 15px;
+	/*border-radius: 15px;*/
 }
 
 .r_command_item:hover {
-	background-color: #AAAAAA;
+	background-color: #8b7aff;
 }
 
 /* Individual buttons in the r_list_display */
@@ -42,16 +43,16 @@ font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans
 	background-color: #E6F3FF;
 	border: 1px solid #000000;
 	border-radius: 5px;
-	margin-bottom: 2px;
+	margin-bottom: 5px;
 	line-height: 0px;
 
 	text-decoration: none;
-	padding: 0px;
+	padding: 1px;
 	border-radius: 8px;
 }
 
 .email_item:hover {
-	background-color: #AAAAAA;
+	background-color: #8b7aff;
 }
 
 /* Top heading */

@@ -3,6 +3,8 @@
 import React, {useState, useEffect} from 'react';
 import DOMPurify from 'dompurify';
 
+import PostalMime from 'postal-mime';
+
 import timer from "./timer.mjs";
 import R_COMMANDS from "./r_commands.mjs";
 import R_LIST_DISPLAY from "./r_list_display.mjs";
@@ -37,6 +39,8 @@ var m_first_item = null;
 var m_last_item = null;
 var m_id_list = [ ];
 var m_command = "cur";
+
+var m_show_timers = false;
 
 
 function App() {
@@ -98,7 +102,7 @@ function App() {
 		set_date_end("");
 	}
 
-	function click_select_email(em_body) {
+	function click_select_email(em_to, em_from, em_received, em_body) {
 		if (m_tab === null) {
 			m_tab = window.open('', '_blank');
 			if (m_tab === null) {
@@ -108,9 +112,22 @@ function App() {
 			m_tab.addEventListener('beforeunload', () => {  
 				m_tab = null;
 			});
-			m_tab.document.title = 'Message';
 		}
-		m_tab.document.body.innerHTML = em_body;
+
+		const parser = new PostalMime();
+		parser.parse(em_body).then(email => {
+			let hdr = "To: "+em_to+"\nFrom: "+em_from+"\nDate: "+em_received+"\nSubject: "+email.subject;
+			m_tab.document.title = email.subject;
+			if (email.html) {
+				m_tab.document.body.innerHTML = "<pre>"+hdr+"\n\n</pre>"+email.html;
+				console.log("parsed html");
+			} else {
+				m_tab.document.body.innerHTML = "<pre>"+hdr+"\n\n"+email.text+"</pre>";
+				console.log("parsed text only");
+			}
+		}).catch(error => {
+			console.error("mime parse error: "+error);
+		}); 
 	}
 
 	// Called during refresh of page and inital loading
@@ -118,7 +135,8 @@ function App() {
 		let dtmp = new timer();
 		let ftmp = new timer();
 
-		console.log("display_update");
+		if (m_show_timers)
+			console.log("display_update");
 
 		ftmp.start();
 
@@ -137,7 +155,8 @@ function App() {
 
 			dtmp.stop();
 
-			console.log("fetch timer: \t\t"+ftmp.get_elapsed_milli()+"        .then data timer: \t"+dtmp.get_elapsed_milli());
+			if (m_show_timers)
+				console.log("fetch timer: \t\t"+ftmp.get_elapsed_milli()+"        .then data timer: \t"+dtmp.get_elapsed_milli());
 		})
 		.catch(error => {
 			err_disp(error);
@@ -183,7 +202,8 @@ function App() {
 			return response.text();
 		})
 		.then((data) => {
-			console.log("(in .then data)");
+			if (m_show_timers)
+				console.log("(in .then data)");
 			tmp2.stop();
 			m_parsed_sql = JSON.parse(data);
 			if (update_email_list() < 0)
@@ -191,11 +211,13 @@ function App() {
 
 			m_timer.stop();
 
-			console.log("fetch to .then: \t"+tmp1.get_elapsed_milli());
-			console.log(".then to data: \t\t"+tmp2.get_elapsed_milli());
-			console.log("Total timer from: \t"+m_timer.get_elapsed_milli());
-			console.log(" ");
-			console.log(" ");
+			if (m_show_timers) {
+				console.log("fetch to .then: \t"+tmp1.get_elapsed_milli());
+				console.log(".then to data: \t\t"+tmp2.get_elapsed_milli());
+				console.log("Total timer from: \t"+m_timer.get_elapsed_milli());
+				console.log(" ");
+				console.log(" ");
+			}
 		})
 		.catch((error) => {
 			err_disp(error);
@@ -283,10 +305,47 @@ function App() {
 		}
 	}
 
+
+
+
+
 	/*
 	* Render the email html page in a safeish manner
 	*/
 	function HtmlRenderer({ htmlContent }) {
+
+
+
+
+		//const MailParser = require('mailparser').MailParser;
+
+
+		// Create a new MailParser instance
+/*		const mailparser = new MailParser();
+
+		// Parse the raw email
+		mailparser.on('end', function(mailObject) {
+			// Display parsed email headers
+			console.log('From:', mailObject.headers.get('from'));
+			console.log('To:', mailObject.headers.get('to'));
+			console.log('Subject:', mailObject.headers.get('subject'));
+			console.log('Date:', mailObject.headers.get('date'));
+			console.log('Message-ID:', mailObject.headers.get('message-id'));
+			console.log('References:', mailObject.headers.get('references'));
+			console.log('In-Reply-To:', mailObject.headers.get('in-reply-to'));
+			console.log('Content-Type:', mailObject.headers.get('content-type'));
+			console.log('MIME-Version:', mailObject.headers.get('mime-version'));
+
+			// Display parsed email body
+			console.log('Body:', mailObject.text);
+		});
+
+		// Write the raw email content to the MailParser instance
+//		mailparser.write(rawEmail);
+//		mailparser.end();
+*/
+
+		//return htmlContent;
 		const sanitizedHtml = DOMPurify.sanitize(htmlContent);
 		return (
 			<div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
@@ -354,7 +413,7 @@ function App() {
 				</div>
 				<br/>
 				<br/>
-				<HtmlRenderer htmlContent={m_display_string} />
+				<HtmlRenderer htmlContent={m_display_string} /> 
 			</div>
 				)
 			}

@@ -6,6 +6,10 @@ import { act } from 'react-test-renderer';
 
 enableFetchMocks()
 
+jest.mock("postal-mime/src/postal-mime.js", () => {
+	return "hello there!";
+});
+
 jest.mock("react-datepicker/dist/react-datepicker.css", () => {
 	return "body { color: blue; }";
 });
