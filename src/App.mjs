@@ -95,16 +95,28 @@ function App() {
 		});
 	};
 
+	open_tab();
+
+
+
 	function reset_column_inputs() {
 		set_form(form_initial_state);
 		set_date_start("");
 		set_date_end("");
 	}
 
+	function tab_is_valid() {
+		if (m_tab && m_tab.document && m_tab.document.body)
+			return 1;
+		return 0;
+	}
+
 	function click_select_email(em_to, em_from, em_received, em_body) {
 		open_tab();
 		const parser = new PostalMime();
 		parser.parse(em_body).then(email => {
+			if (! tab_is_valid())
+				err_throw("Tab is not valid");
 			let hdr = "To: "+em_to+"\nFrom: "+em_from+"\nDate: "+em_received+"\nSubject: "+email.subject;
 			m_tab.document.title = email.subject;
 			if (email.html) {
@@ -114,10 +126,10 @@ function App() {
 				m_tab.document.body.innerHTML = "<pre>"+hdr+"\n\n"+email.text+"</pre>";
 				console.log("parsed text only");
 			}
+			m_tab.document.head.innerHTML += "<link rel=\"icon\" href=\"email_icon.ico\" />";
 		}).catch(error => {
-			console.error("mime parse error: "+error);
+			err_disp("mime parse error: "+error.text);
 		}); 
-		m_tab.document.head.innerHTML += "<link rel=\"icon\" href=\"email_icon.ico\" />";
 	}
 
 	// Called during refresh of page and inital loading
@@ -216,17 +228,17 @@ function App() {
 	}
 
 	function open_tab() {
+		if (m_tab !== null) 
+			return;
+	//	m_tab = window.open('', '_blank');
+		m_tab = window.open('about:blank');
 		if (m_tab === null) {
-		//	m_tab = window.open('', '_blank');
-			m_tab = window.open('about:blank');
-			if (m_tab === null) {
-				console.log('New tab could not be opened, possibly disable popup blocker');
-				return;
-			}
-			m_tab.addEventListener('beforeunload', () => {  
-				m_tab = null;
-			});
+			console.log('New tab could not be opened, possibly disable popup blocker');
+			return;
 		}
+		m_tab.addEventListener('beforeunload', () => {  
+			m_tab = null;
+		});
 	}
 
 	/*

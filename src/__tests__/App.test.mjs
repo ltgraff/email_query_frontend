@@ -6,9 +6,23 @@ import { act } from 'react-test-renderer';
 
 enableFetchMocks()
 
-jest.mock("postal-mime/src/postal-mime.js", () => {
-	return "hello there!";
-});
+jest.mock("postal-mime/src/postal-mime", () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({
+        parse: jest.fn().mockResolvedValue({
+            subject: 'Mocked Subject',
+            html: '<p>Mocked HTML Content</p>',
+			document: {
+				body: {
+					innerHTML: 'stuff',
+				},
+				head: {
+					innerHTML: 'stuff',
+				},
+			},
+        })
+    }))
+}));
 
 jest.mock("react-datepicker/dist/react-datepicker.css", () => {
 	return "body { color: blue; }";
