@@ -118,6 +118,17 @@ function App() {
 			if (! tab_is_valid())
 				err_throw("Tab is not valid");
 			let hdr = "To: "+em_to+"\nFrom: "+em_from+"\nDate: "+em_received+"\nSubject: "+email.subject;
+
+			if (email.attachments.length > 0) {
+				hdr += "\n\n";
+				for (let i = 0; i < email.attachments.length; i++) {
+					const blob = new Blob([email.attachments[i].content]);
+					const url = URL.createObjectURL(blob);
+
+					hdr += "attachment: <a href="+url+" download="+email.attachments[i].filename+">"+email.attachments[i].filename+"</a>\n";
+				}
+			}
+
 			m_tab.document.title = email.subject;
 			if (email.html) {
 				m_tab.document.body.innerHTML = "<pre>"+hdr+"\n\n</pre>"+email.html;
