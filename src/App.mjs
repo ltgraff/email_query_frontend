@@ -40,9 +40,6 @@ var m_last_item = null;
 var m_id_list = [ ];
 var m_command = "cur";
 
-var m_show_timers = false;
-
-
 function App() {
 	const [contacts, set_contacts] = useState("");
 	const [loading, set_loading] = useState(true);
@@ -95,7 +92,7 @@ function App() {
 		});
 	};
 
-	open_tab();
+	//open_tab();
 
 
 
@@ -111,8 +108,12 @@ function App() {
 		return 0;
 	}
 
-	function click_select_email(em_to, em_from, em_received, em_body) {
-		open_tab();
+	function update_tab() {
+		var em_body = m_parsed_sql[0].em_body;
+		var em_from = m_parsed_sql[0].em_from;
+		var em_to = m_parsed_sql[0].em_to;
+		var em_received = m_parsed_sql[0].received;
+
 		const parser = new PostalMime();
 		parser.parse(em_body).then(email => {
 			if (! tab_is_valid())
@@ -141,21 +142,62 @@ function App() {
 		}).catch(error => {
 			err_disp("mime parse error: "+error.text);
 		}); 
+}
+
+	function click_select_email(id) {
+		open_tab();
+
+		console.log("click_select_email");
+
+		if (handle_post_select("email", id) < 0) {
+			err_disp("click_select_email for id: "+id);
+			return -1;
+		}
 	}
+
+	function handle_post_select(message_type, message_id) {
+		console.log("handle_post_select id: "+message_id);
+
+		m_command = "select "+message_type;
+
+		const post_data = {
+			key1: m_command,
+			key2: "",
+			key3: "",
+			key4: "",
+			key5: "",
+			key6: "",
+			key7: "",
+			key8: "",
+			key9: message_id,
+		};
+
+		fetch('http://localhost:3001/api/send-data', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(post_data),
+		})
+		.then((response) => {
+			if (!response.ok)
+				err_throw("handle_post_request received bad response");
+			return response.text();
+		})
+		.then((data) => {
+			m_parsed_sql = JSON.parse(data);
+			update_tab();
+		})
+		.catch((error) => {
+			err_disp(error);
+		});
+		return 0;
+	}
+
 
 	// Called during refresh of page and inital loading
 	function display_update() {
-		let dtmp = new timer();
-		let ftmp = new timer();
-
-		if (m_show_timers)
-			console.log("display_update");
-
-		ftmp.start();
-
 		fetch('http://localhost:3001').then(response => {
-			ftmp.stop();
-			dtmp.start();
 			return response.text();
 		})
 		.then((data) => {
@@ -165,11 +207,6 @@ function App() {
 				err_throw("display_update: Could not parse SQL");
 			if (update_email_list() < 0)
 				err_throw("display_update: update_email_list failed");
-
-			dtmp.stop();
-
-			if (m_show_timers)
-				console.log("fetch timer: \t\t"+ftmp.get_elapsed_milli()+"        .then data timer: \t"+dtmp.get_elapsed_milli());
 		})
 		.catch(error => {
 			err_disp(error);
@@ -178,11 +215,6 @@ function App() {
 
 	// Called when refreshing due to a command
 	function handle_post_request(cmd) {
-		let tmp1 = new timer();
-		let tmp2 = new timer();
-
-		tmp1.start();
-
 		m_command = cmd;
 		const post_data = {
 			key1: m_command,
@@ -196,9 +228,6 @@ function App() {
 			key9: m_id_list,
 		};
 
-		console.log("to: *"+form.to+"* from: *"+form.from+"*")
-		console.log("first: *"+m_first_item+"* last: *"+m_last_item+"*")
-
 		fetch('http://localhost:3001/api/send-data', {
 			method: 'POST',
 			headers: {
@@ -207,30 +236,14 @@ function App() {
 			body: JSON.stringify(post_data),
 		})
 		.then((response) => {
-			tmp1.stop();
-			tmp2.start();
-
 			if (!response.ok)
 				err_throw("handle_post_request received bad response");
 			return response.text();
 		})
 		.then((data) => {
-			if (m_show_timers)
-				console.log("(in .then data)");
-			tmp2.stop();
 			m_parsed_sql = JSON.parse(data);
 			if (update_email_list() < 0)
 				err_throw("handle_post_request .then data");
-
-			m_timer.stop();
-
-			if (m_show_timers) {
-				console.log("fetch to .then: \t"+tmp1.get_elapsed_milli());
-				console.log(".then to data: \t\t"+tmp2.get_elapsed_milli());
-				console.log("Total timer from: \t"+m_timer.get_elapsed_milli());
-				console.log(" ");
-				console.log(" ");
-			}
 		})
 		.catch((error) => {
 			err_disp(error);
@@ -241,8 +254,8 @@ function App() {
 	function open_tab() {
 		if (m_tab !== null) 
 			return;
-	//	m_tab = window.open('', '_blank');
-		m_tab = window.open('about:blank');
+		m_tab = window.open('', '_blank');
+		//m_tab = window.open('about:blank');
 		if (m_tab === null) {
 			console.log('New tab could not be opened, possibly disable popup blocker');
 			return;

@@ -3,6 +3,8 @@ import React from 'react';
 import STRING_SPACING from "./string_spacing.mjs";
 
 function new_received(rec) {
+	if (!rec)
+		return "";
 	let ret = "";
 	ret = rec.substring(0, 19);
 	ret = ret.replace(/T/g, "   ");
@@ -22,13 +24,14 @@ const r_list_display = (props) => {
 		{disp.spacing_display("From", "To", "Subject", "Received")}
 		{Array.isArray(items) && items.map((item) => {
 			let nr = new_received(item.received);
-			const spacing_result = disp.spacing_display(item.em_from, item.em_to, item.em_subject, nr);
+			const spacing_result = disp.spacing_display(item.from, item.to, item.subject, nr);
 			return (
-					<button className="email_item" data-testid={"r_list_display-button-"+item.eid} key={item.eid} onClick={() => props.click_select_email(item.em_to, item.em_from, nr, item.em_body)}>{spacing_result}</button>
+					<button className="email_item" data-testid={"r_list_display-button-"+item.id} key={item.id} onClick={() => props.click_select_email(item.id)}>{spacing_result}</button>
 			);
 		})}
 		</div>
 	);
 }
 
+					//<button className="email_item" data-testid={"r_list_display-button-"+item.id} key={item.id} onClick={() => props.click_select_email(item.em_to, item.em_from, nr, item.em_body)}>{spacing_result}</button>
 export default r_list_display;
