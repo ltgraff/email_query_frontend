@@ -66,7 +66,7 @@ function error_append(error_str, fn) {
 	return -1;
 }
 
-function error_disp(error, fn) {
+function error_disp(error, fn, func) {
 	if (typeof(error) === 'object' && error && error.stack) {
 		if (g_error_stack.length < 1)
 			g_error_stack = error.stack;
@@ -75,7 +75,7 @@ function error_disp(error, fn) {
 	}
 	if (g_error_stack.length > 0)
 		error_append(g_error_stack, fn);
-	console.log(g_error_str);
+	func(g_error_str);
 	g_error_str = "";
 	g_error_stack = "";
 	return -1;

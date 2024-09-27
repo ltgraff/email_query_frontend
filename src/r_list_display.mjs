@@ -33,5 +33,4 @@ const r_list_display = (props) => {
 	);
 }
 
-					//<button className="email_item" data-testid={"r_list_display-button-"+item.id} key={item.id} onClick={() => props.click_select_email(item.em_to, item.em_from, nr, item.em_body)}>{spacing_result}</button>
 export default r_list_display;

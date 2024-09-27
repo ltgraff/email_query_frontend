@@ -1,12 +1,18 @@
 // npm start
 
+"use client";
+
 import React, {useState, useEffect} from 'react';
+
+import { createRoot } from "react-dom/client";
+import { StrictMode } from 'react';
+
 import DOMPurify from 'dompurify';
 
 import PostalMime from 'postal-mime';
 
 import timer from "./timer.mjs";
-import R_COMMANDS from "./r_commands.mjs";
+import R_COMMANDS from "./R_COMMANDS.mjs";
 import R_LIST_DISPLAY from "./r_list_display.mjs";
 
 import R_DATE_PICKER from "react-datepicker";
@@ -29,20 +35,17 @@ function err_append(error) {
 	return error_append(error, __FILE__);
 }
 
-function err_disp(error) {
-	return error_disp(error, __FILE__);
-}
-
 var m_tab = null;
 var m_parsed_sql = null;
 var m_first_item = null;
 var m_last_item = null;
-var m_id_list = [ ];
 var m_command = "cur";
 
 function App() {
-	const [contacts, set_contacts] = useState("");
-	const [loading, set_loading] = useState(true);
+	const [m_contacts, set_contacts] = useState("");
+	const [m_loading, set_loading] = useState(true);
+	const [m_content_type, set_display] = useState(0); // 0 email, 1 sms
+	const [m_display_string, set_display_string] = useState("Loading...");
 
 	const form_initial_state = {
 		date_start:  "",
@@ -64,7 +67,7 @@ function App() {
 	};
 
 	useEffect(() => {
-		display_update();
+		post_cur("email");
 		// Disable useEffect dependency warning
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -79,9 +82,8 @@ function App() {
 		return () => {
 			window.removeEventListener('resize', window_dim_update);
 		};
-	}, [window_dim]);
+	}, [window_dim.innerWidth]);
 
-	var m_display_string = "";
 
 	const m_timer = new timer();
 
@@ -92,9 +94,15 @@ function App() {
 		});
 	};
 
-	//open_tab();
+	function err_disp(error) {
+		error_disp(error, __FILE__, err_disp_sub);
+	}
 
-
+	function err_disp_sub(str) {
+		set_loading(true);
+		console.log(str);
+		set_display_string(str);
+	}
 
 	function reset_column_inputs() {
 		set_form(form_initial_state);
@@ -142,82 +150,24 @@ function App() {
 		}).catch(error => {
 			err_disp("mime parse error: "+error.text);
 		}); 
-}
+		return 0;
+	}
 
 	function click_select_email(id) {
 		open_tab();
 
 		console.log("click_select_email");
 
-		if (handle_post_select("email", id) < 0) {
-			err_disp("click_select_email for id: "+id);
-			return -1;
-		}
+		return post_select_email(id);
 	}
 
-	function handle_post_select(message_type, message_id) {
-		console.log("handle_post_select id: "+message_id);
+	function command_build_request(cmd, message_type, message_id) {
+		//cmd = "bob";
 
-		m_command = "select "+message_type;
-
-		const post_data = {
-			key1: m_command,
-			key2: "",
-			key3: "",
-			key4: "",
-			key5: "",
-			key6: "",
-			key7: "",
-			key8: "",
-			key9: message_id,
-		};
-
-		fetch('http://localhost:3001/api/send-data', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(post_data),
-		})
-		.then((response) => {
-			if (!response.ok)
-				err_throw("handle_post_request received bad response");
-			return response.text();
-		})
-		.then((data) => {
-			m_parsed_sql = JSON.parse(data);
-			update_tab();
-		})
-		.catch((error) => {
-			err_disp(error);
-		});
-		return 0;
-	}
-
-
-	// Called during refresh of page and inital loading
-	function display_update() {
-		fetch('http://localhost:3001').then(response => {
-			return response.text();
-		})
-		.then((data) => {
-			set_loading(false);
-			m_parsed_sql = JSON.parse(data);
-			if (!m_parsed_sql || !m_parsed_sql[0])
-				err_throw("display_update: Could not parse SQL");
-			if (update_email_list() < 0)
-				err_throw("display_update: update_email_list failed");
-		})
-		.catch(error => {
-			err_disp(error);
-		});
-	}
-
-	// Called when refreshing due to a command
-	function handle_post_request(cmd) {
+		console.log("command_build_request for: *"+cmd+"*");
 		m_command = cmd;
 		const post_data = {
-			key1: m_command,
+			key1: message_type+" "+cmd,
 			key2: form.to,
 			key3: form.from,
 			key4: form.subject,
@@ -225,30 +175,67 @@ function App() {
 			key6: date_selected_end,
 			key7: m_first_item,
 			key8: m_last_item,
-			key9: m_id_list,
+			key9: message_id,
 		};
+		return post_data;
+	}
 
-		fetch('http://localhost:3001/api/send-data', {
+	// Called when refreshing due to a command
+	function handle_post_request(cmd, message_type, message_id) {
+		const post_data = command_build_request(cmd, message_type, message_id);
+
+		console.log("------------------> handle_post_request() m_first_item: "+m_first_item+", m_last_item: "+m_last_item);
+		console.log("handle_post_request about to access /api/send-data");
+		console.log("***** post_data.key1: *"+post_data.key1+"*");
+		console.log("full post_data: "+JSON.stringify(post_data));
+
+		//fetch('https://10.2.2.8:3001/api/send-data', {
+			//'x-api-key': '2024_03_31-message_backend',
+		fetch('http://10.2.2.8:3001/api/send-data', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-api-key':	process.env.REACT_APP_API_KEY,
 			},
 			body: JSON.stringify(post_data),
 		})
 		.then((response) => {
-			if (!response.ok)
-				err_throw("handle_post_request received bad response");
+			console.log(".then(response)");
+			if (!response.ok) {
+				return (async () => {
+					try {
+						const err_str = await response.text();
+						throw new Error(err_str);
+					} catch (error) {
+						err_throw("Response from fetch was not ok, and there was an error reading the error response text: "+error);
+					}
+				})();
+			}
 			return response.text();
 		})
 		.then((data) => {
-			m_parsed_sql = JSON.parse(data);
-			if (update_email_list() < 0)
-				err_throw("handle_post_request .then data");
+			console.log(".then(data)");
+			try {
+				if (!data)
+					err_throw("No data was returned from fetch");
+				m_parsed_sql = JSON.parse(data);
+				handle_data_from_fetch(cmd, data);
+			} catch (error) {
+				err_throw("Error parsing data from fetch");
+			}
 		})
 		.catch((error) => {
-			err_disp(error);
+			err_disp("handle_post_request, stack:\n\n"+error.stack);
 		});
-		return 0;
+	}
+
+	function handle_data_from_fetch(cmd, data) {
+		if (cmd === "select") {
+			update_tab();
+		} else {
+			if (update_email_list() < 0)
+				err_throw("handle_post_request .then data");
+		}
 	}
 
 	function open_tab() {
@@ -285,64 +272,96 @@ function App() {
 		flist.push(item);
 	}
 
-	function update_next() {
+	function list_items_update_next() {
 		let i;
 		let flist = [ ];
 
+		console.log("list_items_update_next");
 		for (i=0;i<m_parsed_sql.length;i++) 
 			email_add_item(flist, m_parsed_sql[i]);
-		m_first_item = flist[0].received;
+		m_first_item = flist[0].id;
 		if (flist.length-1 > -1)
-			m_last_item = flist[flist.length-1].received;
+			m_last_item = flist[flist.length-1].id;
 		else
 			m_last_item = m_first_item;
 		set_contacts(flist);
+		console.log("------------------> list_items_update_next() m_first_item: "+m_first_item+", m_last_item: "+m_last_item);
 		return 1;
 	}
 
-	function update_default() {
-		console.log("update_default");
+	function list_items_update_default() {
+		console.log("list_items_update_default");
 
-		m_first_item = m_parsed_sql[0].received;
+		m_first_item = m_parsed_sql[0].id;
 		if (m_parsed_sql.length-1 > -1)
-			m_last_item = m_parsed_sql[m_parsed_sql.length-1].received;
+			m_last_item = m_parsed_sql[m_parsed_sql.length-1].id;
 		else
 			m_last_item = m_first_item;
 		set_contacts(m_parsed_sql);
+		console.log("------------------> list_items_update_default() m_first_item: "+m_first_item+", m_last_item: "+m_last_item);
 		return 1;
 	}
 
 	function update_email_list() {
 		console.log("update_email_list");
-		if (! m_parsed_sql[0]) {
-			set_contacts("");
+		if (! m_parsed_sql[0]) // For prev or next that are empty, just leave everything as is
 			return 0;
-		}
-		console.log("update_email_list (do some work)");
-		m_id_list = [ ];
+		console.log("update_email_list (do some work).. m_command: *"+m_command+"*");
+		set_loading(false);
 	
 		if (m_command === "next")
-			return update_next();
-		return update_default();
+			return list_items_update_next();
+		return list_items_update_default();
 	}
 
-	function click_update_email_list(value) {
-		if (value === "cur" || value === "reset") {
+	function click_update_email_list(cmd) {
+
+		console.log("click_update_email_list() cmd: "+cmd);
+
+
+		m_timer.start();
+		if (cmd === "display") {
+			if (m_content_type === 0)
+				set_display(1);
+			else
+				set_display(0);
+			cmd = "reset";
+		}
+		if (cmd === "cur" || cmd === "reset") {
+			console.log("command: "+cmd);
 			m_first_item = null;
 			m_last_item = null;
-			m_id_list = [ ];
-			if (value === "reset") {
+			if (cmd === "reset")
 				reset_column_inputs();
-				return;
-			}
+			return post_cur("email");
+		} else if (cmd === "next") {
+			return post_next("email");
+		} else if (cmd === "prev") {
+			return post_prev("email");
+		} else {
+			err_throw("unknown command: "+cmd);
 		}
-		m_timer.start();
-		try {
-			handle_post_request(value)
-		} catch (error) {
-			console.log("caught error after handle_post_request");
-			err_disp("click_update_email_list: "+error.stack);
-		}
+	}
+
+	function post_select_email(email_id) {
+		return handle_post_request("select", "email", email_id);
+	}
+
+	function post_cur(message_type) {
+		console.log("before handle_post_request cur");
+		handle_post_request("cur", message_type, null);
+		console.log("after handle_post_request cur ");
+	}
+
+	function post_prev(message_type) {
+		return handle_post_request("prev", message_type, m_first_item);
+	}
+
+	function post_next(message_type) {
+		return handle_post_request("next", message_type, m_last_item);
+	}
+
+	function post_select_sms() {
 	}
 
 	/*
@@ -375,7 +394,7 @@ function App() {
 	* Determine what the height should be for the list display
 	*/
 	function determine_list_height() {
-		let ratio = 850/900;
+		let ratio = 710/900; // 850/900
 		let nw = ratio*(window_dim.height - 240);
 		if (nw < 140)
 			nw = 140;
@@ -383,13 +402,16 @@ function App() {
 	}
 
 	return (
+		<StrictMode>
 		<main data-testid="app-main">
-			{loading === true ? (
+			{m_loading === true ? (
 				<div>
-					<h1>Loading..</h1>
+					<b><pre>{m_display_string}</pre></b>
 				</div>
 			) : (
-		<div className="r_commands">
+		<div className="R_COMMANDS">
+			<p style={{fontSize: "2em"}}>Message lookup</p>
+			<br />
 			<R_COMMANDS onChildClick={click_update_email_list}/>
 			<br />
 			<br />
@@ -411,16 +433,16 @@ function App() {
 					padding:	'0px 0px'
 				}}>
 				<div className="r_list_display">
-					<R_LIST_DISPLAY click_select_email={click_select_email} items={contacts} title="" />
+					<R_LIST_DISPLAY click_select_email={click_select_email} items={m_contacts} title="" />
 				</div>
 				</div>
 				<br/>
 				<br/>
-				<HtmlRenderer htmlContent={m_display_string} /> 
 			</div>
 				)
 			}
 		</main>
+		</StrictMode>
 	);
 }
 
